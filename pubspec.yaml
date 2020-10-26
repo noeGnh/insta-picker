@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
 
   storage_path: "^0.2.0"
+  provider: "^4.3.2+2"
 
 dev_dependencies:
   flutter_test:
