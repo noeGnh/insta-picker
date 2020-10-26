@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:insta_picker/src/models/folder-model.dart';
+import 'package:insta_picker/src/models/folder_model.dart';
 import 'package:storage_path/storage_path.dart';
 
 class PickerProvider extends ChangeNotifier{
