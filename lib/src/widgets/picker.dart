@@ -5,16 +5,30 @@ import 'package:insta_picker/src/models/folder_model.dart';
 import 'package:insta_picker/src/providers/picker_provider.dart';
 import 'package:provider/provider.dart';
 
-class Picker extends StatefulWidget {
+class Picker extends StatelessWidget {
   final title;
 
-  Picker({Key key, this.title}) : super(key: key);
+  Picker({this.title});
 
   @override
-  _PickerState createState() => _PickerState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<PickerProvider>(
+        create: (_) => PickerProvider(),
+        child: PickerView(title: title,),
+    );
+  }
 }
 
-class _PickerState extends State<Picker> {
+class PickerView extends StatefulWidget {
+  final title;
+
+  PickerView({Key key, this.title}) : super(key: key);
+
+  @override
+  _PickerViewState createState() => _PickerViewState();
+}
+
+class _PickerViewState extends State<PickerView> {
 
   PickerProvider pickerProvider;
 
@@ -28,9 +42,7 @@ class _PickerState extends State<Picker> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PickerProvider>(
-      create: (_) => PickerProvider(),
-      child: Scaffold(
+     return Scaffold(
         body: SafeArea(
             child: Column(
               children: [
@@ -112,8 +124,7 @@ class _PickerState extends State<Picker> {
               ],
             )
         ),
-      ),
-    );
+     );
   }
 
 }
