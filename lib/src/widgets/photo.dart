@@ -1,19 +1,30 @@
 import 'package:camera/camera.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_picker/src/models/options_model.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:torch_compat/torch_compat.dart';
 
 class Photo extends StatelessWidget {
+  final Options options;
+
+  Photo({this.options});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<PhotoProvider>(
       create: (_) => PhotoProvider(),
-      child: PhotoView(),
+      child: PhotoView(options: options),
     );
   }
 }
 
 class PhotoView extends StatefulWidget {
+  final Options options;
+
+  PhotoView({Key key, this.options}) : super(key: key);
+
   @override
   _PhotoViewState createState() => _PhotoViewState();
 }
@@ -50,8 +61,8 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
     }
   }
 
-  Widget _cameraPreviewWidget(PhotoProvider provider) {
-    if (provider.controller == null || !provider.controller.value.isInitialized) {
+  Widget _cameraPreviewWidget() {
+    if (photoProvider.controller == null || !photoProvider.controller.value.isInitialized) {
       return const Text(
         'Chargement...',
         style: TextStyle(
@@ -62,8 +73,8 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
     }
 
     return AspectRatio(
-      aspectRatio: provider.controller.value.aspectRatio,
-      child: CameraPreview(provider.controller),
+      aspectRatio: photoProvider.controller.value.aspectRatio,
+      child: CameraPreview(photoProvider.controller),
     );
   }
 
@@ -78,7 +89,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
           children: [
             FloatingActionButton(
                 child: Icon(Icons.camera),
-                backgroundColor: Colors.blueGrey,
+                backgroundColor: widget.options.iconsColor,
                 onPressed: () {
                   photoProvider.onCapturePressed(context);
                 })
@@ -100,13 +111,32 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
     return Expanded(
       child: Align(
         alignment: Alignment.centerLeft,
-        child: FlatButton.icon(
-            onPressed: (){
-              photoProvider.onSwitchCamera(mounted);
+        child: GestureDetector(
+              child: Padding(
+                  padding: EdgeInsets.only(left: 21),
+                  child: Icon(_getCameraLensIcon(lensDirection), color: widget.options.iconsColor, size: 32,),
+              ),
+              onTap: (){
+                photoProvider.onSwitchCamera(mounted);
+              },
+            )
+      ),
+    );
+  }
+
+  Widget _flashToggleRowWidget() {
+    return Expanded(
+      child: Align(
+          alignment: Alignment.centerRight,
+          child: GestureDetector(
+            child: Padding(
+                padding: EdgeInsets.only(right: 21),
+                child: Icon(photoProvider.flashOn ? Icons.flash_on : Icons.flash_off, color: widget.options.iconsColor, size: 32,),
+            ),
+            onTap: (){
+              photoProvider.switchFlashState(!photoProvider.flashOn);
             },
-            icon: Icon(_getCameraLensIcon(lensDirection)),
-            label: Text(
-                "${lensDirection.toString().substring(lensDirection.toString().indexOf('.') + 1)}")),
+          )
       ),
     );
   }
@@ -123,7 +153,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
                 children: <Widget>[
                   Expanded(
                     flex: 1,
-                    child: _cameraPreviewWidget(provider),
+                    child: _cameraPreviewWidget(),
                   ),
                   SizedBox(height: 10.0),
                   Row(
@@ -131,7 +161,12 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
                     children: [
                       _cameraTogglesRowWidget(),
                       _captureControlRowWidget(context),
-                      Spacer()
+                      FutureBuilder<bool>(
+                          future: TorchCompat.hasTorch,
+                          builder: (ctx, snapshot){
+                            return snapshot.hasData && snapshot.data ? _flashToggleRowWidget() : Spacer();
+                          }
+                      ),
                     ],
                   ),
                   SizedBox(height: 20.0)

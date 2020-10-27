@@ -2,21 +2,30 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
+import 'package:insta_picker/src/models/options_model.dart';
 import 'package:insta_picker/src/providers/gallery_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
 class Gallery extends StatelessWidget {
+  final Options options;
+
+  Gallery({this.options});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<GalleryProvider>(
       create: (_) => GalleryProvider(),
-      child: GalleryView(),
+      child: GalleryView(options: options),
     );
   }
 }
 
 class GalleryView extends StatefulWidget {
+  final Options options;
+
+  GalleryView({Key key, this.options}) : super(key: key);
+
   @override
   _GalleryViewState createState() => _GalleryViewState();
 }
@@ -59,9 +68,14 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
             }
         ),
-        leading: Icon(
-          Icons.clear,
-          color: Colors.black,
+        leading: GestureDetector(
+          child: Icon(
+            Icons.clear,
+            color: widget.options.iconsColor,
+          ),
+          onTap: (){
+            Navigator.pop(context, null);
+          },
         ),
         actions: [
           GestureDetector(
@@ -69,15 +83,15 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color: Colors.black,
+                color: widget.options.iconsColor,
               ),
             ),
             onTap: (){
-
+              Navigator.pop(context, galleryProvider.image != null ? File(galleryProvider.image) : null);
             },
           )
         ],
-        backgroundColor: Colors.white,
+        backgroundColor: widget.options.appBarColor,
       ),
       body: SafeArea(
           child: Column(

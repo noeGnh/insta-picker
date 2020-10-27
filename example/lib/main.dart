@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:insta_picker/insta_picker.dart';
 
@@ -27,6 +29,9 @@ class Content extends StatefulWidget {
 }
 
 class _ContentState extends State<Content> {
+
+  File image;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -35,9 +40,15 @@ class _ContentState extends State<Content> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Container(
+            width: 300,
+            height: 300,
+            child: image != null ? Image.file(image) : Container(),
+          ),
           RaisedButton(
-            onPressed: (){
-              InstaPicker(context).pick();
+            onPressed: () async {
+              image = await InstaPicker.pick(context);
+              setState(() {});
             },
             child: Text('Pick It'),
           )
