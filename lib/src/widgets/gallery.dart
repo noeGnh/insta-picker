@@ -21,8 +21,11 @@ class GalleryView extends StatefulWidget {
   _GalleryViewState createState() => _GalleryViewState();
 }
 
-class _GalleryViewState extends State<GalleryView> {
+class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin{
   GalleryProvider galleryProvider;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -33,7 +36,13 @@ class _GalleryViewState extends State<GalleryView> {
   }
 
   @override
+  void dispose() {
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,

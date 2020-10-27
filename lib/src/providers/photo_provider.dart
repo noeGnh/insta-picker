@@ -1,5 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class PhotoProvider extends ChangeNotifier{
 
@@ -7,13 +9,8 @@ class PhotoProvider extends ChangeNotifier{
   List cameras;
   int selectedCameraIdx;
   String imagePath;
-  bool mounted = false;
 
-  void init(){
-
-  }
-
-  void getAvailableCameras(){
+  void getAvailableCameras(bool mounted){
 
     availableCameras().then((availableCameras) {
 
@@ -24,7 +21,7 @@ class PhotoProvider extends ChangeNotifier{
 
         notifyListeners();
 
-        _initCameraController(cameras[selectedCameraIdx]).then((void v) {});
+        _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
 
       }else{
         print("No camera available");
@@ -35,7 +32,7 @@ class PhotoProvider extends ChangeNotifier{
 
   }
 
-  Future _initCameraController(CameraDescription cameraDescription) async {
+  Future _initCameraController(CameraDescription cameraDescription, bool mounted) async {
     if (controller != null) {
       await controller.dispose();
     }
@@ -43,7 +40,7 @@ class PhotoProvider extends ChangeNotifier{
     controller = CameraController(cameraDescription, ResolutionPreset.high);
 
     controller.addListener(() {
-      // 5
+
       if (mounted) {
         notifyListeners();
       }
@@ -53,7 +50,6 @@ class PhotoProvider extends ChangeNotifier{
       }
     });
 
-    // 6
     try {
       await controller.initialize();
     } on CameraException catch (e) {
@@ -65,6 +61,31 @@ class PhotoProvider extends ChangeNotifier{
     }
   }
 
+  void onSwitchCamera(bool mounted) {
+    selectedCameraIdx = selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
+    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    _initCameraController(selectedCamera, mounted);
+  }
 
+  void onCapturePressed(context) async {
+
+    try {
+
+      final path = join(
+        (await getTemporaryDirectory()).path, '${DateTime.now()}.png',
+      );
+      print(path);
+      await controller.takePicture(path);
+
+      // Navigator.push(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => PreviewImageScreen(imagePath: path),
+      //   ),
+      // );
+    } catch (e) {
+      print(e);
+    }
+  }
 
 }
