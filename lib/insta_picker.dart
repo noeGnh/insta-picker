@@ -14,7 +14,7 @@ class InstaPicker {
 
   pick(){
     Navigator.of(context, rootNavigator: true).push(
-      MaterialPageRoute(builder: (ctx) => Picker(title: title,))
+      MaterialPageRoute(builder: (ctx) => Picker())
     );
   }
 
