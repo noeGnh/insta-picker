@@ -3,6 +3,7 @@ import 'package:insta_picker/src/models/options_model.dart';
 import 'package:insta_picker/src/providers/picker_provider.dart';
 import 'package:insta_picker/src/widgets/gallery.dart';
 import 'package:insta_picker/src/widgets/photo.dart';
+import 'package:insta_picker/src/widgets/video.dart';
 import 'package:provider/provider.dart';
 
 class Picker extends StatelessWidget {
@@ -15,7 +16,7 @@ class Picker extends StatelessWidget {
     return ChangeNotifierProvider<PickerProvider>(
       create: (_) => PickerProvider(),
       child: DefaultTabController(
-        length: 2,
+        length: 3,
         child: PickerView(options: options),
       ),
     );
@@ -49,7 +50,7 @@ class _PickerViewState extends State<PickerView> {
            return Scaffold(
              body: TabBarView(
                  children: [
-                   Gallery(options: widget.options), Photo(options: widget.options)
+                   Gallery(options: widget.options), Photo(options: widget.options), Video(options: widget.options)
                  ]
              ),
              bottomNavigationBar: SizedBox(
@@ -57,6 +58,7 @@ class _PickerViewState extends State<PickerView> {
                  tabs: [
                    Tab(text: "Galerie",),
                    Tab(text: "Photo",),
+                   Tab(text: "Vidéo"),
                  ],
                  isScrollable: false,
                  indicatorWeight: 1.5,

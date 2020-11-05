@@ -2,17 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:insta_picker/src/providers/video_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../../insta_picker.dart';
+
 class Video extends StatelessWidget {
+  final Options options;
+
+  Video({this.options});
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<VideoProvider>(
       create: (_) => VideoProvider(),
-      child: VideoView(),
+      child: VideoView(options: options),
     );
   }
 }
 
 class VideoView extends StatefulWidget {
+  final Options options;
+
+  VideoView({Key key, this.options}) : super(key: key);
+
   @override
   _VideoViewState createState() => _VideoViewState();
 }
