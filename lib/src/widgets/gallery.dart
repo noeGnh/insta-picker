@@ -7,25 +7,23 @@ import 'package:insta_picker/src/providers/gallery_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
-class Gallery extends StatelessWidget {
-  final Options options;
+Options options;
 
-  Gallery({this.options});
+class Gallery extends StatelessWidget {
+
+  Gallery({@required Options galleryViewOptions}){ options = galleryViewOptions; }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<GalleryProvider>(
       create: (_) => GalleryProvider(),
-      child: GalleryView(options: options),
+      child: GalleryView(),
     );
   }
+
 }
 
 class GalleryView extends StatefulWidget {
-  final Options options;
-
-  GalleryView({Key key, this.options}) : super(key: key);
-
   @override
   _GalleryViewState createState() => _GalleryViewState();
 }
@@ -71,7 +69,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         leading: GestureDetector(
           child: Icon(
             Icons.clear,
-            color: widget.options.iconsColor,
+            color: options.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -83,7 +81,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color: widget.options.iconsColor,
+                color: options.iconsColor,
               ),
             ),
             onTap: (){
@@ -91,7 +89,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
             },
           )
         ],
-        backgroundColor: widget.options.appBarColor,
+        backgroundColor: options.appBarColor,
       ),
       body: SafeArea(
           child: Column(

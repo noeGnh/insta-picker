@@ -50,7 +50,9 @@ class _PickerViewState extends State<PickerView> {
            return Scaffold(
              body: TabBarView(
                  children: [
-                   Gallery(options: widget.options), Photo(options: widget.options), Video(options: widget.options)
+                   Gallery(galleryViewOptions: widget.options),
+                   Photo(photoViewOptions: widget.options),
+                   Video(videoViewOptions: widget.options)
                  ]
              ),
              bottomNavigationBar: SizedBox(

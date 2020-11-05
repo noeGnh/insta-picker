@@ -1,27 +1,30 @@
 import 'dart:io';
 
-import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_better_camera/camera.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:torch_compat/torch_compat.dart';
 
 class PhotoProvider extends ChangeNotifier{
 
   CameraController controller;
-  List cameras;
   int selectedCameraIdx;
   String imagePath;
+  List cameras;
 
-  bool flashOn = false;
+  FlashMode flashMode = FlashMode.off;
 
-  void switchFlashState(bool state){
-    this.flashOn = state;
-    if (state){
-      TorchCompat.turnOn();
-    }else{
-      TorchCompat.turnOff();
+  Future<void> onFlashButtonPressed() async {
+    switch (flashMode){
+      case FlashMode.torch: flashMode = FlashMode.autoFlash; break;
+
+      case FlashMode.off: flashMode = FlashMode.torch; break;
+
+      default: flashMode = FlashMode.off;
     }
+
+    await controller.setFlashMode(flashMode);
+
     notifyListeners();
   }
 
