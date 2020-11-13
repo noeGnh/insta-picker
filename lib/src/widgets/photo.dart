@@ -12,12 +12,7 @@ class Photo extends StatelessWidget {
   Photo({@required Options photoViewOptions}){ options = photoViewOptions; }
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<PhotoProvider>(
-      create: (_) => PhotoProvider(),
-      child: PhotoView(),
-    );
-  }
+  Widget build(BuildContext context) => PhotoView();
 
 }
 
@@ -26,11 +21,8 @@ class PhotoView extends StatefulWidget {
   _PhotoViewState createState() => _PhotoViewState();
 }
 
-class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixin{
+class _PhotoViewState extends State<PhotoView> {
   PhotoProvider photoProvider;
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -88,7 +80,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
                 child: Icon(Icons.camera),
                 backgroundColor: options.iconsColor,
                 onPressed: () {
-                  photoProvider.onCapturePressed(context);
+                  photoProvider.onCapturePressed(context, options);
                 })
           ],
         ),
@@ -153,10 +145,10 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Consumer<PhotoProvider>(
         builder: (ctx, provider, child){
           return Container(
+            color: options.bgColor,
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -165,7 +157,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
                     flex: 1,
                     child: _cameraPreviewWidget(),
                   ),
-                  SizedBox(height: 10.0),
+                  SizedBox(height: 40.0),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [

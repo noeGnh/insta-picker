@@ -1,9 +1,10 @@
-import 'dart:io';
-
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
 import 'package:insta_picker/src/models/options_model.dart';
 import 'package:insta_picker/src/providers/gallery_provider.dart';
+import 'package:insta_picker/src/utils/utils.dart';
+import 'package:photo_manager/photo_manager.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:provider/provider.dart';
 
@@ -14,12 +15,7 @@ class Gallery extends StatelessWidget {
   Gallery({@required Options galleryViewOptions}){ options = galleryViewOptions; }
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<GalleryProvider>(
-      create: (_) => GalleryProvider(),
-      child: GalleryView(),
-    );
-  }
+  Widget build(BuildContext context) => GalleryView();
 
 }
 
@@ -39,11 +35,12 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
     super.initState();
 
     galleryProvider =  Provider.of<GalleryProvider>(context, listen: false);
-    galleryProvider.getImagesPath();
+    galleryProvider.getFilesPath();
   }
 
   @override
   void dispose() {
+    galleryProvider.disposeVideoController();
     super.dispose();
   }
 
@@ -51,6 +48,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
+      backgroundColor: options.bgColor,
       appBar: AppBar(
         elevation: 0.0,
         title: Consumer<GalleryProvider>(
@@ -85,7 +83,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               ),
             ),
             onTap: (){
-              Navigator.pop(context, galleryProvider.image != null ? File(galleryProvider.image) : null);
+              galleryProvider.submit(context, options);
             },
           )
         ],
@@ -99,14 +97,55 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                 child: Consumer<GalleryProvider>(
                     builder: (ctx, provider, child){
 
-                      return provider.image != null ?
+                      if (provider.selectedFile != null && provider.selectedFile.type != AssetType.video) provider.disposeVideoController();
+
+                      return provider.selectedFile != null ?
                         Container(
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: MediaQuery.of(context).size.width,
-                          child: PhotoView(
-                            imageProvider: FileImage(File(provider.image)),
-                            backgroundDecoration: const BoxDecoration(color: Colors.white),
-                          ),
+                          child: Stack(
+                            children: [
+                              provider.selectedFile.type == AssetType.image ? PhotoView(
+                                imageProvider: FileImage(provider.selectedFile.file),
+                                backgroundDecoration: const BoxDecoration(color: Colors.white),
+                              ) : FutureBuilder(
+                                  future: provider.initVideoController(provider.selectedFile.file),
+                                  builder: (ctx, snapshot){
+
+                                    if (snapshot.connectionState == ConnectionState.done) {
+                                      return Chewie(
+                                        controller: provider.chewieController,
+                                      );
+                                    }
+                                    return Container();
+
+                                  }
+                              ),
+                              options.allowMultiple ? Positioned(
+                                right: 20,
+                                bottom: provider.selectedFile.type == AssetType.video ? 50 : 5,
+                                child: GestureDetector(
+                                  child: Container(
+                                    width: 36,
+                                    height: 36,
+                                    decoration: new BoxDecoration(
+                                      color: Colors.black26,
+                                      shape: BoxShape.circle,
+                                    ),
+                                    child: Icon(
+                                      Icons.add_to_photos,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  onTap: (){
+                                    provider.multiSelect = !provider.multiSelect;
+                                    provider.toggleCheckState(provider.selectedFile);
+                                  },
+                                )
+                              ) : Container()
+                            ],
+                          )
                         ) : Container();
 
                     }
@@ -126,15 +165,69 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                 ),
                                 itemBuilder: (_, i) {
                                   var file = provider.selectedFolder.files[i];
-                                  return file != null ? GestureDetector(
-                                    child: Image.file(
-                                      File(file),
-                                      fit: BoxFit.cover,
-                                    ),
-                                    onTap: () {
-                                      provider.image = file;
-                                    },
+
+                                  return file != null ? Stack(
+                                    fit: StackFit.expand,
+                                    children: [
+                                      GestureDetector(
+                                        child: file.type == AssetType.image ? Image.file(
+                                          file.file,
+                                          fit: BoxFit.cover,
+                                        ) : Image.memory(
+                                          file.thumbBytes,
+                                          fit: BoxFit.cover,
+                                        ),
+                                        onTap: () {
+                                          provider.selectedFile = file;
+                                          if (provider.multiSelect) provider.toggleCheckState(file);
+                                        },
+                                        onLongPress: (){
+
+                                          if (!options.allowMultiple) return;
+
+                                          provider.multiSelect = !provider.multiSelect;
+                                          provider.toggleCheckState(file);
+                                          provider.selectedFile = file;
+                                          
+                                        },
+                                      ),
+                                      provider.multiSelect ? Positioned(
+                                          top: 5,
+                                          right: 5,
+                                          child: GestureDetector(
+                                            child: Container(
+                                              width: 24,
+                                              height: 24,
+                                              padding: EdgeInsets.only(top: 2),
+                                              decoration: new BoxDecoration(
+                                                color: provider.getCheckState(file) ? Colors.blue : Colors.white70,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(width: 1.5, color: Colors.white)
+                                              ),
+                                              child: provider.getCheckState(file)
+                                                             ? Text(provider.getCheckNumber(file).toString(),
+                                                                    style: TextStyle(
+                                                                      color: Colors.white
+                                                                    ),
+                                                                    textAlign: TextAlign.center
+                                                             ) : Container(),
+                                            ),
+                                            onTap: (){
+
+                                              provider.toggleCheckState(file);
+                                              provider.selectedFile = file;
+
+                                            },
+                                          )
+                                      ) : Container(),
+                                      file.duration != null && file.type == AssetType.video ? Positioned(
+                                          right: 5,
+                                          bottom: 5,
+                                          child: Text(Utils.printDuration(file.duration), style: TextStyle(color: Colors.white),)
+                                      ) : Container()
+                                    ],
                                   ) : Container();
+
                                 },
                                 itemCount: provider.selectedFolder.files.length
                         ),

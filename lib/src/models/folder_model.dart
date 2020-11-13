@@ -1,13 +1,13 @@
+import 'package:insta_picker/src/models/file_model.dart';
+
 class FolderModel{
 
-  List<String> files;
-  String folderName;
+  List<FileModel> files;
+  String name;
+  String id;
+  int type;
+  int count;
 
-  FolderModel({this.files, this.folderName});
-
-  FolderModel.fromJson(Map<String, dynamic> json) {
-    files = json['files'].cast<String>();
-    folderName = json['folderName'];
-  }
+  FolderModel({this.files, this.name, this.id, this.type, this.count});
 
 }

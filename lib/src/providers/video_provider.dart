@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
+import 'package:insta_picker/src/models/result_model.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
@@ -81,6 +82,12 @@ class VideoProvider extends ChangeNotifier{
     if (mounted) notifyListeners();
   }
 
+  void refreshCamera(bool mounted) {
+    Future.delayed(Duration(milliseconds: 1000), () async {
+      _initCameraController(cameras[0], mounted);
+    });
+  }
+
   void onSwitchCamera(bool mounted) {
     selectedCameraIdx = selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
     CameraDescription selectedCamera = cameras[selectedCameraIdx];
@@ -145,8 +152,17 @@ class VideoProvider extends ChangeNotifier{
             new FlatButton(
                 child: new Text('Valider'),
                 onPressed: (){
+
                   Navigator.of(context, rootNavigator: true).pop();
-                  Navigator.of(context).pop(File(videoPath));
+
+                  Navigator.pop(
+                      context,
+                      InstaPickerResult(
+                          pickedFiles: [PickedFile(file: File(videoPath), path: videoPath, name: basename(videoPath))],
+                          resultType: ResultType.VIDEO
+                      )
+                  );
+
                 }
             ),
           ],

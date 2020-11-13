@@ -14,12 +14,7 @@ class Video extends StatelessWidget {
   Video({@required Options videoViewOptions}){ options = videoViewOptions; }
 
   @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider<VideoProvider>(
-      create: (_) => VideoProvider(),
-      child: VideoView(),
-    );
-  }
+  Widget build(BuildContext context) => VideoView();
 
 }
 
@@ -28,11 +23,8 @@ class VideoView extends StatefulWidget {
   _VideoViewState createState() => _VideoViewState();
 }
 
-class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixin{
+class _VideoViewState extends State<VideoView> {
   VideoProvider videoProvider;
-
-  @override
-  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -41,7 +33,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
     videoProvider =  Provider.of<VideoProvider>(context, listen: false);
     videoProvider.getAvailableCameras(mounted);
 
-    videoProvider.durationLimit = 30;
+    videoProvider.durationLimit = options.videoDurationLimitInSeconds;
   }
 
   @override
@@ -153,10 +145,10 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Consumer<VideoProvider>(
         builder: (ctx, provider, child){
           return Container(
+            color: options.bgColor,
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -167,7 +159,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
                   ),
                   LinearProgressIndicator(
                     value: provider.getIndicatorProgress(),
-                    valueColor: AlwaysStoppedAnimation<Color>(options.tabBarIndicatorColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(options.accentColor),
                     backgroundColor: Colors.white,
                   ),
                   SizedBox(height: 5.0),
