@@ -77,7 +77,7 @@ class _PhotoViewState extends State<PhotoView> {
           mainAxisSize: MainAxisSize.max,
           children: [
             FloatingActionButton(
-                child: Icon(Icons.camera),
+                child: Icon(Icons.camera, color: options.bgColor,),
                 backgroundColor: options.iconsColor,
                 onPressed: () {
                   photoProvider.onCapturePressed(context, options);

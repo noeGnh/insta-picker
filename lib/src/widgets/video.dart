@@ -221,7 +221,7 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
       onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
       onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
       child: FloatingActionButton(
-        child: Icon(Icons.camera),
+        child: Icon(Icons.camera, color: options.bgColor,),
         backgroundColor: options.iconsColor,
         onPressed: () => widget.videoProvider.manageTooltip(context, superTooltip),
       ),

@@ -103,6 +103,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                         Container(
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: MediaQuery.of(context).size.width,
+                          color: options.bgColor,
                           child: Stack(
                             children: [
                               provider.selectedFile.type == AssetType.image ? PhotoView(
@@ -157,7 +158,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
                     return provider.selectedFolder != null && provider.selectedFolder.files.length > 0
                       ? Container(
-                            color: Colors.white,
+                            color: options.bgColor,
                             height: MediaQuery.of(context).size.height * 0.42,
                             child: GridView.builder(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -200,9 +201,9 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                               height: 24,
                                               padding: EdgeInsets.only(top: 2),
                                               decoration: new BoxDecoration(
-                                                color: provider.getCheckState(file) ? Colors.blue : Colors.white70,
+                                                color: provider.getCheckState(file) ? options.accentColor : Colors.white70,
                                                 shape: BoxShape.circle,
-                                                border: Border.all(width: 1.5, color: Colors.white)
+                                                border: Border.all(width: 1.5, color: options.bgColor)
                                               ),
                                               child: provider.getCheckState(file)
                                                              ? Text(provider.getCheckNumber(file).toString(),
