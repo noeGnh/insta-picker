@@ -288,7 +288,7 @@ packages:
       name: photo_view
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.2"
+    version: "0.10.3"
   photofilters:
     dependency: "direct main"
     description:
@@ -407,7 +407,7 @@ packages:
       name: video_player
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.0"
+    version: "1.0.1"
   video_player_platform_interface:
     dependency: transitive
     description:

@@ -59,7 +59,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.white60,
+                            color: options.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
@@ -78,7 +78,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: Colors.white60,
+                            color: options.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
