@@ -108,7 +108,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                             children: [
                               provider.selectedFile.type == AssetType.image ? PhotoView(
                                 imageProvider: FileImage(provider.selectedFile.file),
-                                backgroundDecoration: const BoxDecoration(color: Colors.white),
+                                backgroundDecoration: BoxDecoration(color: options.bgColor),
                               ) : FutureBuilder(
                                   future: provider.initVideoController(provider.selectedFile.file),
                                   builder: (ctx, snapshot){
