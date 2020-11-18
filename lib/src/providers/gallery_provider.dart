@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
@@ -10,7 +10,6 @@ import 'package:insta_picker/src/utils/utils.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:insta_picker/src/widgets/preview/video_preview.dart';
 import 'package:photo_manager/photo_manager.dart';
-import 'package:video_player/video_player.dart';
 
 class GalleryProvider extends ChangeNotifier{
 
@@ -22,8 +21,7 @@ class GalleryProvider extends ChangeNotifier{
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
 
-  VideoPlayerController videoPlayerController;
-  ChewieController chewieController;
+  BetterPlayerController betterPlayerController;
 
   List<FileModel> get files => this._files;
   List<FolderModel> get folders => this._folders;
@@ -68,32 +66,42 @@ class GalleryProvider extends ChangeNotifier{
 
   initVideoController(File file) async {
 
-    videoPlayerController = VideoPlayerController.file(file);
+    await disposeVideoController();
 
-    chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      allowedScreenSleep: false,
-      allowFullScreen: false,
-      aspectRatio: 3 / 2,
-      autoPlay: true,
-      looping: false,
-    );
+    if (betterPlayerController == null || !betterPlayerController.isVideoInitialized()){
+
+      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(BetterPlayerDataSourceType.FILE, file.path);
+
+      betterPlayerController = BetterPlayerController(BetterPlayerConfiguration(
+            allowedScreenSleep: false,
+            aspectRatio: 3 / 2,
+            autoPlay: true,
+            looping: false,
+            controlsConfiguration: BetterPlayerControlsConfiguration(
+                enableFullscreen: false,
+                enableOverflowMenu: false,
+                enableSkips: false,
+            )
+          ),
+          betterPlayerDataSource: betterPlayerDataSource
+      );
+
+    }
 
   }
 
   pauseVideo() async {
-    if (chewieController != null && chewieController.isPlaying) await chewieController.pause();
+    if (betterPlayerController != null && await betterPlayerController.isPlaying()) await betterPlayerController.pause();
   }
 
   playVideo() async {
-    if (chewieController != null && !chewieController.isPlaying) await chewieController.play();
+    if (betterPlayerController != null && !(await betterPlayerController.isPlaying())) await betterPlayerController.play();
   }
 
   disposeVideoController(){
     try{
 
-      if (chewieController != null) chewieController.dispose(); chewieController = null;
-      if (videoPlayerController != null) videoPlayerController.dispose(); videoPlayerController = null;
+      if (betterPlayerController != null) betterPlayerController.dispose();
 
     }catch(e){
       print(e);
@@ -193,8 +201,6 @@ class GalleryProvider extends ChangeNotifier{
     this._selectedFile = folder.files[index];
 
     this._selectedFolder = folder;
-
-    disposeVideoController();
 
     notifyListeners();
   }

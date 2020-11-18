@@ -1,4 +1,4 @@
-import 'package:chewie/chewie.dart';
+import 'package:better_player/better_player.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
 import 'package:insta_picker/src/models/options_model.dart';
@@ -97,8 +97,6 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                 child: Consumer<GalleryProvider>(
                     builder: (ctx, provider, child){
 
-                      if (provider.selectedFile != null && provider.selectedFile.type != AssetType.video) provider.disposeVideoController();
-
                       return provider.selectedFile != null ?
                         Container(
                           height: MediaQuery.of(context).size.height * 0.35,
@@ -114,8 +112,8 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                   builder: (ctx, snapshot){
 
                                     if (snapshot.connectionState == ConnectionState.done) {
-                                      return Chewie(
-                                        controller: provider.chewieController,
+                                      return BetterPlayer(
+                                        controller: provider.betterPlayerController,
                                       );
                                     }
                                     return Container();
