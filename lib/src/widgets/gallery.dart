@@ -1,4 +1,4 @@
-import 'package:better_player/better_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
 import 'package:insta_picker/src/models/options_model.dart';
@@ -107,18 +107,8 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                               provider.selectedFile.type == AssetType.image ? PhotoView(
                                 imageProvider: FileImage(provider.selectedFile.file),
                                 backgroundDecoration: BoxDecoration(color: options.bgColor),
-                              ) : FutureBuilder(
-                                  future: provider.initVideoController(provider.selectedFile.file),
-                                  builder: (ctx, snapshot){
-
-                                    if (snapshot.connectionState == ConnectionState.done) {
-                                      return BetterPlayer(
-                                        controller: provider.betterPlayerController,
-                                      );
-                                    }
-                                    return Container();
-
-                                  }
+                              ) : Chewie(
+                                  controller: provider.initVideoController(provider.selectedFile.file),
                               ),
                               options.allowMultiple ? Positioned(
                                 right: 20,
@@ -172,9 +162,18 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                         child: file.type == AssetType.image ? Image.file(
                                           file.file,
                                           fit: BoxFit.cover,
-                                        ) : Image.memory(
-                                          file.thumbBytes,
-                                          fit: BoxFit.cover,
+                                        ) : (file.thumbFile != null
+                                          ? Image.file(
+                                            file.thumbFile,
+                                            fit: BoxFit.cover,
+                                          )
+                                          : (file.thumbBytes != null
+                                            ? Image.memory(
+                                              file.thumbBytes,
+                                              fit: BoxFit.cover,
+                                            )
+                                            : Container()
+                                          )
                                         ),
                                         onTap: () {
                                           provider.selectedFile = file;

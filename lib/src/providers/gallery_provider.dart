@@ -1,6 +1,7 @@
 import 'dart:io';
+import 'dart:typed_data';
 
-import 'package:better_player/better_player.dart';
+import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
@@ -9,7 +10,11 @@ import 'package:insta_picker/src/models/result_model.dart';
 import 'package:insta_picker/src/utils/utils.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:insta_picker/src/widgets/preview/video_preview.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:video_player/video_player.dart';
 
 class GalleryProvider extends ChangeNotifier{
 
@@ -21,7 +26,9 @@ class GalleryProvider extends ChangeNotifier{
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
 
-  BetterPlayerController betterPlayerController;
+  File oldVideoFile;
+  ChewieController chewieController;
+  VideoPlayerController videoPlayerController;
 
   List<FileModel> get files => this._files;
   List<FolderModel> get folders => this._folders;
@@ -64,44 +71,46 @@ class GalleryProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  initVideoController(File file) async {
+  ChewieController initVideoController(File file) {
 
-    await disposeVideoController();
+    if (oldVideoFile == null || oldVideoFile != file) {
 
-    if (betterPlayerController == null || !betterPlayerController.isVideoInitialized()){
+      VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
 
-      BetterPlayerDataSource betterPlayerDataSource = BetterPlayerDataSource(BetterPlayerDataSourceType.FILE, file.path);
-
-      betterPlayerController = BetterPlayerController(BetterPlayerConfiguration(
-            allowedScreenSleep: false,
-            aspectRatio: 3 / 2,
-            autoPlay: true,
-            looping: false,
-            controlsConfiguration: BetterPlayerControlsConfiguration(
-                enableFullscreen: false,
-                enableOverflowMenu: false,
-                enableSkips: false,
-            )
-          ),
-          betterPlayerDataSource: betterPlayerDataSource
+      ChewieController chewieController = ChewieController(
+        videoPlayerController: videoPlayerController,
+        allowedScreenSleep: false,
+        allowFullScreen: false,
+        aspectRatio: 3 / 2,
+        autoPlay: true,
+        looping: false,
       );
 
+      this.oldVideoFile = file;
+      this.chewieController = chewieController;
+      this.videoPlayerController = videoPlayerController;
+
+      return chewieController;
+
     }
+
+    return this.chewieController;
 
   }
 
   pauseVideo() async {
-    if (betterPlayerController != null && await betterPlayerController.isPlaying()) await betterPlayerController.pause();
+    if (chewieController != null && chewieController.isPlaying) await chewieController.pause();
   }
 
   playVideo() async {
-    if (betterPlayerController != null && !(await betterPlayerController.isPlaying())) await betterPlayerController.play();
+    if (chewieController != null && !chewieController.isPlaying) await chewieController.play();
   }
 
   disposeVideoController(){
     try{
 
-      if (betterPlayerController != null) betterPlayerController.dispose();
+      if (chewieController != null) chewieController.dispose(); chewieController = null;
+      if (videoPlayerController != null) videoPlayerController.dispose(); videoPlayerController = null;
 
     }catch(e){
       print(e);
@@ -109,6 +118,10 @@ class GalleryProvider extends ChangeNotifier{
   }
 
   getFilesPath() async {
+
+    if (!await Permission.storage.request().isGranted) return;
+
+    final String cacheDir = '${(await getApplicationDocumentsDirectory()).path}/instaPicker';
 
     var result = await PhotoManager.requestPermission();
     if (result) {
@@ -133,13 +146,42 @@ class GalleryProvider extends ChangeNotifier{
         await Future.wait(
             assetList.map((asset) async {
 
-              File f = await asset.file;
+              File f = await asset.file; File thumbFile; Uint8List thumbBytes;
 
               if (asset.type != AssetType.image && asset.type != AssetType.video) return;
 
+              if (asset.type == AssetType.video) {
+
+                try{
+
+                  String thumbPath = '$cacheDir/${basename(f.path).split('.')[0]}.png';
+
+                  if (await File(thumbPath).exists()) {
+
+                    thumbFile = File(thumbPath);
+
+                  } else {
+
+                    thumbBytes = await asset.thumbData;
+
+                    final thumbFile = await File(thumbPath).create(recursive: true);
+
+                    await thumbFile.writeAsBytes(thumbBytes);
+
+                    assert(thumbFile != null);
+
+                  }
+
+                }catch(e){
+                  print(e);
+                }
+
+              }
+
               fileList.add(FileModel(
                   file: f,
-                  thumbBytes: asset.type == AssetType.video ? await asset.thumbData : null,
+                  thumbFile: thumbFile,
+                  thumbBytes: thumbBytes,
                   duration: asset.videoDuration,
                   type: asset.type,
                   size: asset.size,
@@ -149,8 +191,6 @@ class GalleryProvider extends ChangeNotifier{
                   modifiedDt: asset.modifiedDateTime,
                   latitude: asset.latitude,
                   longitude: asset.longitude,
-                  ll: await asset.latlngAsync(),
-                  mediaUrl: await asset.getMediaUrl(),
                   title: asset.title,
                   relativePath: asset.relativePath,
                   path: f.path
@@ -195,8 +235,10 @@ class GalleryProvider extends ChangeNotifier{
     ).toList() ?? [];
   }
 
-  void onFolderSelected(FolderModel folder, {int index = 0}){
+  void onFolderSelected(FolderModel folder, {int index = 0}) {
     assert(folder.files.length > 0);
+
+    disposeVideoController();
 
     this._selectedFile = folder.files[index];
 
@@ -221,28 +263,6 @@ class GalleryProvider extends ChangeNotifier{
         if (this._selectedFile.type == AssetType.video) {
 
           if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < 10) {
-
-            // bool findImage;
-            //
-            // for (int i = 0; i < this._folders.length; i++){
-            //
-            //   findImage = false;
-            //
-            //   if (this._folders[i].files.isNotEmpty){
-            //
-            //     for (int y = 0; y < this._folders[i].files.length; y++){
-            //
-            //       if (this._folders[i].files[y].type == AssetType.image) {
-            //         this.onFolderSelected(this._folders[i], index: y);
-            //         findImage = true;
-            //         break;
-            //       }
-            //
-            //     }
-            //
-            //   }
-            //   if (findImage) break;
-            // }
 
             Future.delayed(Duration(milliseconds: 1000), () async { pauseVideo(); });
 
