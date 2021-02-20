@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
@@ -194,7 +194,7 @@ class VideoProvider extends ChangeNotifier{
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           notifyListeners();
-          if (_duration > _durationLimit) {
+          if (_duration >= _durationLimit) {
 
             stopVideoRecording(context, mounted);
 

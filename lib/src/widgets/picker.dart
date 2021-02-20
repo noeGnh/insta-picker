@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:insta_picker/src/models/options_model.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/options.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/providers/gallery_provider.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:insta_picker/src/providers/picker_provider.dart';
@@ -12,13 +12,16 @@ import 'package:provider/provider.dart';
 
 class InstaPicker {
 
-  static Future<InstaPickerResult> pick(BuildContext context, {Options options}) async
-  => await Navigator.of(context).push(
-          MaterialPageRoute(builder: (ctx) => Picker(options: options ?? Options())));
+  static Future<InstaPickerResult> pick(
+      BuildContext context,
+      {Options options}
+  ) async => await Navigator.of(context).push(
+          MaterialPageRoute(builder: (ctx) => Picker(options: options)));
 
 }
 
 class Picker extends StatelessWidget {
+
   final Options options;
 
   Picker({this.options});
@@ -35,15 +38,18 @@ class Picker extends StatelessWidget {
         child: PickerView(options: options),
     );
   }
+
 }
 
 class PickerView extends StatefulWidget {
+
   final Options options;
 
   PickerView({Key key, this.options}) : super(key: key);
 
   @override
   _PickerViewState createState() => _PickerViewState();
+
 }
 
 class _PickerViewState extends State<PickerView> with SingleTickerProviderStateMixin {
@@ -58,17 +64,17 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
 
     if (widget.options.showGalleryTab){
       _pages.add(Gallery(galleryViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.galleryTabTitle));
+      _tabs.add(Tab(text: widget.options.customizationOptions.galleryCustomization.title));
     }
 
     if (widget.options.showPhotoTab){
       _pages.add(Photo(photoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.photoTabTitle));
+      _tabs.add(Tab(text: widget.options.customizationOptions.photoCustomization.title));
     }
 
     if (widget.options.showVideoTab){
       _pages.add(Video(videoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.videoTabTitle));
+      _tabs.add(Tab(text: widget.options.customizationOptions.videoCustomization.title));
     }
 
     _pickerProvider =  Provider.of<PickerProvider>(context, listen: false);
@@ -103,9 +109,9 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                  tabs: _tabs,
                  isScrollable: false,
                  indicatorWeight: 1.5,
-                 labelColor: widget.options.tabBarTextColor,
-                 indicatorColor: widget.options.tabBarIndicatorColor,
-                 unselectedLabelColor: widget.options.tabBarTextColor,
+                 labelColor: widget.options.customizationOptions.tabBarTextColor,
+                 indicatorColor: widget.options.customizationOptions.tabBarIndicatorColor,
+                 unselectedLabelColor: widget.options.customizationOptions.tabBarTextColor,
                ),
              ),
            );

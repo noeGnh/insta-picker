@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/file_model.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:path/path.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 

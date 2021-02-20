@@ -59,12 +59,12 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: options.bgColor,
+                            color: options.customizationOptions.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
                           Icons.photo_filter_sharp,
-                          color: options.iconsColor,
+                          color: options.customizationOptions.iconsColor,
                           size: 32,
                         ),
                         alignment: Alignment.center,
@@ -78,12 +78,12 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     GestureDetector(
                       child: Container(
                         decoration: BoxDecoration(
-                            color: options.bgColor,
+                            color: options.customizationOptions.bgColor,
                             shape: BoxShape.circle
                         ),
                         child: Icon(
                           Icons.edit,
-                          color: options.iconsColor,
+                          color: options.customizationOptions.iconsColor,
                           size: 32,
                         ),
                         alignment: Alignment.center,
@@ -113,14 +113,14 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: options.bgColor,
+      backgroundColor: options.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Aperçu', style: TextStyle(color: options.textColor),),
+        title: Text('Aperçu', style: TextStyle(color: options.customizationOptions.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            color: options.iconsColor,
+            color: options.customizationOptions.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -132,7 +132,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options.iconsColor,
+                color:options.customizationOptions.iconsColor,
               ),
             ),
             onTap: (){
@@ -140,7 +140,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
             },
           )
         ],
-        backgroundColor: options.appBarColor,
+        backgroundColor: options.customizationOptions.appBarColor,
       ),
       body: Container(
         padding: EdgeInsets.symmetric(vertical: 80),
@@ -163,7 +163,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                               child: GestureDetector(
                                 child: Icon(
                                   Icons.add_circle,
-                                  color: options.iconsColor,
+                                  color: options.customizationOptions.iconsColor,
                                   size: 128,
                                 ),
                                 onTap: (){
@@ -176,7 +176,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                     }
 
                     return itemCount <= 1 ? Container(
-                      color: options.bgColor,
+                      color: options.customizationOptions.bgColor,
                       width: MediaQuery.of(context).size.width,
                       alignment: Alignment.center,
                       child: _getItemCard(i),

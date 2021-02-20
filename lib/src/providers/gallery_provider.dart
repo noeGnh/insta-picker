@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/utils/utils.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:insta_picker/src/widgets/preview/video_preview.dart';
@@ -131,7 +131,7 @@ class GalleryProvider extends ChangeNotifier{
           filterOption: FilterOptionGroup()
             ..setOption(AssetType.video, FilterOption(
                 durationConstraint: const DurationConstraint(
-                  max: Duration(hours: 1),
+                  max: Duration(minutes: 30),
                 )
             ))
       );
@@ -295,7 +295,7 @@ class GalleryProvider extends ChangeNotifier{
     this.selectedFile = this._files[0];
 
     InstaPickerResult result = await Navigator.of(context).push(
-        MaterialPageRoute(builder: (ctx) => ImagePreview(files: this._files, imagePreviewOptions: options, showAddButton: options.allowMultiple,))
+        MaterialPageRoute(builder: (ctx) => ImagePreview(files: this._files, imagePreviewOptions: options, showAddButton: options.customizationOptions.galleryCustomization.maxSelectable > 1,))
     );
 
     if (result != null) Navigator.pop(context, result);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
-import 'package:insta_picker/src/models/options_model.dart';
+import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:torch_compat/torch_compat.dart';
@@ -77,8 +77,8 @@ class _PhotoViewState extends State<PhotoView> {
           mainAxisSize: MainAxisSize.max,
           children: [
             FloatingActionButton(
-                child: Icon(Icons.camera, color: options.bgColor,),
-                backgroundColor: options.iconsColor,
+                child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
+                backgroundColor: options.customizationOptions.iconsColor,
                 onPressed: () {
                   photoProvider.onCapturePressed(context, options);
                 })
@@ -103,7 +103,7 @@ class _PhotoViewState extends State<PhotoView> {
         child: GestureDetector(
               child: Padding(
                   padding: EdgeInsets.only(left: 21),
-                  child: Icon(_getCameraLensIcon(lensDirection), color: options.iconsColor, size: 32,),
+                  child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
               ),
               onTap: (){
                 photoProvider.onSwitchCamera(mounted);
@@ -131,7 +131,7 @@ class _PhotoViewState extends State<PhotoView> {
           child: GestureDetector(
             child: Padding(
                 padding: EdgeInsets.only(right: 21),
-                child: Icon(iconData, color: options.iconsColor, size: 32,),
+                child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               if (photoProvider.controller != null && photoProvider.controller.value.isInitialized){
@@ -148,7 +148,7 @@ class _PhotoViewState extends State<PhotoView> {
     return Consumer<PhotoProvider>(
         builder: (ctx, provider, child){
           return Container(
-            color: options.bgColor,
+            color: options.customizationOptions.bgColor,
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

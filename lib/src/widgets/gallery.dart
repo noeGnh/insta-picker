@@ -1,7 +1,7 @@
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
-import 'package:insta_picker/src/models/options_model.dart';
+import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/gallery_provider.dart';
 import 'package:insta_picker/src/utils/utils.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -48,7 +48,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: options.bgColor,
+      backgroundColor: options.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
         title: Consumer<GalleryProvider>(
@@ -67,7 +67,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         leading: GestureDetector(
           child: Icon(
             Icons.clear,
-            color: options.iconsColor,
+            color: options.customizationOptions.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -79,7 +79,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color: options.iconsColor,
+                color: options.customizationOptions.iconsColor,
               ),
             ),
             onTap: (){
@@ -87,7 +87,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
             },
           )
         ],
-        backgroundColor: options.appBarColor,
+        backgroundColor: options.customizationOptions.appBarColor,
       ),
       body: SafeArea(
           child: Column(
@@ -101,16 +101,16 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                         Container(
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: MediaQuery.of(context).size.width,
-                          color: options.bgColor,
+                          color: options.customizationOptions.bgColor,
                           child: Stack(
                             children: [
                               provider.selectedFile.type == AssetType.image ? PhotoView(
                                 imageProvider: FileImage(provider.selectedFile.file),
-                                backgroundDecoration: BoxDecoration(color: options.bgColor),
+                                backgroundDecoration: BoxDecoration(color: options.customizationOptions.bgColor),
                               ) : Chewie(
                                   controller: provider.initVideoController(provider.selectedFile.file),
                               ),
-                              options.allowMultiple ? Positioned(
+                              options.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
                                 right: 20,
                                 bottom: provider.selectedFile.type == AssetType.video ? 50 : 5,
                                 child: GestureDetector(
@@ -146,7 +146,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
                     return provider.selectedFolder != null && provider.selectedFolder.files.length > 0
                       ? Container(
-                            color: options.bgColor,
+                            color: options.customizationOptions.bgColor,
                             height: MediaQuery.of(context).size.height * 0.42,
                             child: GridView.builder(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -181,7 +181,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                         },
                                         onLongPress: (){
 
-                                          if (!options.allowMultiple) return;
+                                          if (options.customizationOptions.galleryCustomization.maxSelectable == 1) return;
 
                                           provider.multiSelect = !provider.multiSelect;
                                           provider.toggleCheckState(file);
@@ -198,9 +198,9 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                               height: 24,
                                               padding: EdgeInsets.only(top: 2),
                                               decoration: new BoxDecoration(
-                                                color: provider.getCheckState(file) ? options.accentColor : Colors.white70,
+                                                color: provider.getCheckState(file) ? options.customizationOptions.accentColor : Colors.white70,
                                                 shape: BoxShape.circle,
-                                                border: Border.all(width: 1.5, color: options.bgColor)
+                                                border: Border.all(width: 1.5, color: options.customizationOptions.bgColor)
                                               ),
                                               child: provider.getCheckState(file)
                                                              ? Text(provider.getCheckNumber(file).toString(),

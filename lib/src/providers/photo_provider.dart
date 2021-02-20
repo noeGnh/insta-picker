@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';

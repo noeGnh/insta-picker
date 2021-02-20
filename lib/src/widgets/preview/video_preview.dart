@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/file_model.dart';
-import 'package:insta_picker/src/models/options_model.dart';
+import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/video_preview_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_trimmer/trim_editor.dart';
@@ -50,14 +50,14 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: options.bgColor,
+      backgroundColor: options.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Aperçu', style: TextStyle(color: options.textColor),),
+        title: Text('Aperçu', style: TextStyle(color: options.customizationOptions.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            color: options.iconsColor,
+            color: options.customizationOptions.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -69,7 +69,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options.iconsColor,
+                color:options.customizationOptions.iconsColor,
               ),
             ),
             onTap: (){
@@ -77,7 +77,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
             },
           )
         ],
-        backgroundColor: options.appBarColor,
+        backgroundColor: options.customizationOptions.appBarColor,
       ),
       body: FutureBuilder(
         future: _videoPreviewProvider.loadVideoTrimmer(),
@@ -115,7 +115,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                 Visibility(
                   visible: provider.progressVisibility,
                   child: LinearProgressIndicator(
-                    backgroundColor: options.accentColor,
+                    backgroundColor: options.customizationOptions.accentColor,
                   ),
                 ),
                 Expanded(
@@ -126,9 +126,9 @@ class _TrimmerViewState extends State<TrimmerView> {
                     viewerHeight: 50.0,
                     viewerWidth: MediaQuery.of(context).size.width,
                     minDuration: Duration(seconds: 1),
-                    maxDuration: Duration(seconds: options.videoDurationLimitInSeconds),
-                    scrubberPaintColor: options.accentColor,
-                    durationTextStyle: TextStyle(color: options.textColor),
+                    maxDuration: Duration(seconds: options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds),
+                    scrubberPaintColor: options.customizationOptions.accentColor,
+                    durationTextStyle: TextStyle(color: options.customizationOptions.textColor),
                     onChangeStart: (value) {
                       provider.startValue = value;
                     },
@@ -145,12 +145,12 @@ class _TrimmerViewState extends State<TrimmerView> {
                       ? Icon(
                     Icons.pause,
                     size: 80.0,
-                    color: options.iconsColor,
+                    color: options.customizationOptions.iconsColor,
                   )
                       : Icon(
                     Icons.play_arrow,
                     size: 80.0,
-                    color: options.iconsColor,
+                    color: options.customizationOptions.iconsColor,
                   ),
                   onPressed: () async {
                     bool playbackState = await provider.trimmer.videPlaybackControl(

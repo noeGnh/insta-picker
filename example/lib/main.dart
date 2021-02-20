@@ -47,7 +47,7 @@ class _ContentState extends State<Content> {
           ),
           RaisedButton(
             onPressed: () async {
-              InstaPickerResult result = await InstaPicker.pick(context, options: Options(allowMultiple: false));
+              InstaPickerResult result = await InstaPicker.pick(context, options: Options());
               image = result.pickedFiles[0].file;
               print(result.pickedFiles);
               setState(() {});

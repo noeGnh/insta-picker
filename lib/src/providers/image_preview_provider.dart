@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:insta_picker/src/models/file_model.dart';
-import 'package:insta_picker/src/models/options_model.dart';
-import 'package:insta_picker/src/models/result_model.dart';
+import 'package:insta_picker/src/models/options.dart';
+import 'package:insta_picker/src/models/result.dart';
 import 'package:path/path.dart';
 import 'package:photofilters/filters/preset_filters.dart';
 import 'package:photofilters/widgets/photo_filter.dart';
@@ -34,13 +34,13 @@ class ImagePreviewProvider extends ChangeNotifier{
       context,
       new MaterialPageRoute(
         builder: (context) => PhotoFilterSelector(
-          title: Text('Filtres', style: TextStyle(color: options.iconsColor),),
+          title: Text('Filtres', style: TextStyle(color: options.customizationOptions.iconsColor),),
           image: image,
           filters: presetFiltersList,
           filename: basename(file.path),
-          appBarColor: options.appBarColor,
-          appBarIconsColor: options.iconsColor,
-          loader: Center(child: CircularProgressIndicator(backgroundColor: options.iconsColor,)),
+          appBarColor: options.customizationOptions.appBarColor,
+          appBarIconsColor: options.customizationOptions.iconsColor,
+          loader: Center(child: CircularProgressIndicator(backgroundColor: options.customizationOptions.iconsColor,)),
           fit: BoxFit.contain,
         ),
       ),
@@ -75,11 +75,11 @@ class ImagePreviewProvider extends ChangeNotifier{
         ],
         androidUiSettings: AndroidUiSettings(
           toolbarTitle: '',
-          toolbarColor: options.appBarColor,
-          statusBarColor: options.appBarColor,
-          backgroundColor: options.appBarColor,
-          toolbarWidgetColor: options.iconsColor,
-          activeControlsWidgetColor: options.iconsColor,
+          toolbarColor: options.customizationOptions.appBarColor,
+          statusBarColor: options.customizationOptions.appBarColor,
+          backgroundColor: options.customizationOptions.appBarColor,
+          toolbarWidgetColor: options.customizationOptions.iconsColor,
+          activeControlsWidgetColor: options.customizationOptions.iconsColor,
           initAspectRatio: CropAspectRatioPreset.original,
           lockAspectRatio: false,
           showCropGrid: true

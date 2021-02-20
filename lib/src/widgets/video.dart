@@ -33,7 +33,7 @@ class _VideoViewState extends State<VideoView> {
     videoProvider =  Provider.of<VideoProvider>(context, listen: false);
     videoProvider.getAvailableCameras(mounted);
 
-    videoProvider.durationLimit = options.videoDurationLimitInSeconds;
+    videoProvider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
   }
 
   @override
@@ -103,7 +103,7 @@ class _VideoViewState extends State<VideoView> {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(left: 21),
-              child: Icon(_getCameraLensIcon(lensDirection), color: options.iconsColor, size: 32,),
+              child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               videoProvider.onSwitchCamera(mounted);
@@ -131,7 +131,7 @@ class _VideoViewState extends State<VideoView> {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(right: 21),
-              child: Icon(iconData, color: options.iconsColor, size: 32,),
+              child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               if (videoProvider.controller != null && videoProvider.controller.value.isInitialized){
@@ -148,7 +148,7 @@ class _VideoViewState extends State<VideoView> {
     return Consumer<VideoProvider>(
         builder: (ctx, provider, child){
           return Container(
-            color: options.bgColor,
+            color: options.customizationOptions.bgColor,
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -159,7 +159,7 @@ class _VideoViewState extends State<VideoView> {
                   ),
                   LinearProgressIndicator(
                     value: provider.getIndicatorProgress(),
-                    valueColor: AlwaysStoppedAnimation<Color>(options.accentColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor),
                     backgroundColor: Colors.white,
                   ),
                   SizedBox(height: 5.0),
@@ -221,8 +221,8 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
       onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
       onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
       child: FloatingActionButton(
-        child: Icon(Icons.camera, color: options.bgColor,),
-        backgroundColor: options.iconsColor,
+        child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
+        backgroundColor: options.customizationOptions.iconsColor,
         onPressed: () => widget.videoProvider.manageTooltip(context, superTooltip),
       ),
     );
