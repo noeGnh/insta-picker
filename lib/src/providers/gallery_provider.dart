@@ -10,6 +10,7 @@ import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/utils/utils.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:insta_picker/src/widgets/preview/video_preview.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,6 +18,8 @@ import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
 
 class GalleryProvider extends ChangeNotifier{
+
+  final Logger logger = Logger();
 
   FileModel _selectedFile;
   FolderModel _selectedFolder;
@@ -26,7 +29,7 @@ class GalleryProvider extends ChangeNotifier{
   int _multiSelectLimit = 5;
   bool _multiSelect = false;
 
-  File oldVideoFile;
+  String oldVideoFilePath;
   ChewieController chewieController;
   VideoPlayerController videoPlayerController;
 
@@ -73,7 +76,7 @@ class GalleryProvider extends ChangeNotifier{
 
   ChewieController initVideoController(File file) {
 
-    if (oldVideoFile == null || oldVideoFile != file) {
+    if (oldVideoFilePath == null || File(oldVideoFilePath) != file) {
 
       VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
 
@@ -86,7 +89,7 @@ class GalleryProvider extends ChangeNotifier{
         looping: false,
       );
 
-      this.oldVideoFile = file;
+      this.oldVideoFilePath = file.path;
       this.chewieController = chewieController;
       this.videoPlayerController = videoPlayerController;
 
@@ -146,42 +149,35 @@ class GalleryProvider extends ChangeNotifier{
         await Future.wait(
             assetList.map((asset) async {
 
-              File f = await asset.file; File thumbFile; Uint8List thumbBytes;
+              File f = await asset.file; File thumbFile;
 
               if (asset.type != AssetType.image && asset.type != AssetType.video) return;
 
-              if (asset.type == AssetType.video) {
+              try{
 
-                try{
+                String thumbPath = '$cacheDir/${basename(f.path).split('.')[0] + (asset.type == AssetType.video ? '.mp4' : '')}.jpg';
 
-                  String thumbPath = '$cacheDir/${basename(f.path).split('.')[0]}.png';
+                if (await File(thumbPath).exists()) {
 
-                  if (await File(thumbPath).exists()) {
+                  thumbFile = File(thumbPath);
 
-                    thumbFile = File(thumbPath);
+                } else {
 
-                  } else {
+                  Uint8List thumbBytes = await asset.thumbData;
 
-                    thumbBytes = await asset.thumbData;
+                  thumbFile = await File(thumbPath).create(recursive: true);
 
-                    final thumbFile = await File(thumbPath).create(recursive: true);
+                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
 
-                    await thumbFile.writeAsBytes(thumbBytes);
+                  assert(thumbFile != null);
 
-                    assert(thumbFile != null);
-
-                  }
-
-                }catch(e){
-                  print(e);
                 }
 
+              }catch(e){
+                print(e);
               }
 
               fileList.add(FileModel(
-                  file: f,
-                  thumbFile: thumbFile,
-                  thumbBytes: thumbBytes,
                   duration: asset.videoDuration,
                   type: asset.type,
                   size: asset.size,
@@ -193,7 +189,8 @@ class GalleryProvider extends ChangeNotifier{
                   longitude: asset.longitude,
                   title: asset.title,
                   relativePath: asset.relativePath,
-                  path: f.path
+                  filePath: f.path,
+                  thumbPath: thumbFile.path
               ));
 
             }).toList()
@@ -273,7 +270,7 @@ class GalleryProvider extends ChangeNotifier{
             if (result != null) Navigator.pop(context, result);
 
           } else {
-            Utils.showToast('Cette vidéo est trop longue !');
+            Utils.showToast('Vidéo est trop longue !');
           }
 
         } else {

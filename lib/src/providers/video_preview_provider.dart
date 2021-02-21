@@ -36,7 +36,7 @@ class VideoPreviewProvider extends ChangeNotifier{
 
   List<FileModel> files;
 
-  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: files[0].file);
+  loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files[0].filePath));
 
   submit(BuildContext context) async {
 
@@ -57,7 +57,12 @@ class VideoPreviewProvider extends ChangeNotifier{
 
       if (files != null){
         files.map((file) {
-          pickedFiles.add(PickedFile(file: File(value), path: value, name: basename(value)));
+          pickedFiles.add(
+              PickedFile(
+                  path: value,
+                  name: basename(value)
+              )
+          );
         }).toList();
 
         Navigator.pop(context, InstaPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));

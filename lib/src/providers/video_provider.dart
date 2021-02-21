@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
@@ -158,7 +157,12 @@ class VideoProvider extends ChangeNotifier{
                   Navigator.pop(
                       context,
                       InstaPickerResult(
-                          pickedFiles: [PickedFile(file: File(videoPath), path: videoPath, name: basename(videoPath))],
+                          pickedFiles: [
+                            PickedFile(
+                                path: videoPath,
+                                name: basename(videoPath)
+                            )
+                          ],
                           resultType: ResultType.VIDEO
                       )
                   );

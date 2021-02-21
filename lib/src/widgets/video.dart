@@ -24,23 +24,139 @@ class VideoView extends StatefulWidget {
 }
 
 class _VideoViewState extends State<VideoView> {
-  VideoProvider videoProvider;
+  VideoProvider provider;
 
   @override
   void initState() {
     super.initState();
 
-    videoProvider =  Provider.of<VideoProvider>(context, listen: false);
-    videoProvider.getAvailableCameras(mounted);
+    provider =  Provider.of<VideoProvider>(context, listen: false);
+    provider.getAvailableCameras(mounted);
 
-    videoProvider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
+    provider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
   }
 
   @override
   void dispose() {
-    videoProvider.cancelTimer();
+    provider.cancelTimer();
     super.dispose();
   }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: options.customizationOptions.bgColor,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: CameraPreviewWidget(),
+            ),
+            Consumer<VideoProvider>(
+              builder: (ctx, provider, child){
+
+                return LinearProgressIndicator(
+                  value: provider.getIndicatorProgress(),
+                  valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor),
+                  backgroundColor: Colors.white,
+                );
+
+              }
+            ),
+            SizedBox(height: 5.0),
+            Consumer<VideoProvider>(
+                builder: (ctx, provider, child){
+
+                  return Text(
+                    "00 : ${provider.showDuration()}",
+                    textAlign: TextAlign.center,
+                  );
+
+                }
+            ),
+            SizedBox(height: 15.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CameraTogglesRowWidget(mounted),
+                CaptureControlRowWidget(),
+                FutureBuilder<bool>(
+                    future: TorchCompat.hasTorch,
+                    builder: (ctx, snapshot){
+                      return snapshot.hasData && snapshot.data ? FlashToggleRowWidget() : Spacer();
+                    }
+                ),
+              ],
+            ),
+            SizedBox(height: 20.0)
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CameraPreviewWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+
+    if (videoProvider.controller == null || !videoProvider.controller.value.isInitialized) {
+      return Stack(
+        children: [
+          Positioned(
+              child: Container(
+                  width: size.width,
+                  child: LinearProgressIndicator(
+                      backgroundColor: options.customizationOptions.bgColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor)
+                  )
+              )
+          )
+        ],
+      );
+    }
+
+    return AspectRatio(
+      aspectRatio: videoProvider.controller.value.aspectRatio,
+      child: CameraPreview(videoProvider.controller),
+    );
+
+  }
+}
+
+class CaptureControlRowWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+
+    return Expanded(
+      child: Align(
+        alignment: Alignment.center,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            VideoCaptureButton(videoProvider)
+          ],
+        ),
+      ),
+    );
+
+  }
+}
+
+class CameraTogglesRowWidget extends StatelessWidget {
+
+  final bool mounted;
+
+  CameraTogglesRowWidget(this.mounted);
 
   IconData _getCameraLensIcon(CameraLensDirection direction) {
     switch (direction) {
@@ -55,44 +171,12 @@ class _VideoViewState extends State<VideoView> {
     }
   }
 
-  Widget _cameraPreviewWidget() {
-    if (videoProvider.controller == null || !videoProvider.controller.value.isInitialized) {
-      return const Text(
-        'Chargement...',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20.0,
-        ),
-      );
-    }
+  @override
+  Widget build(BuildContext context) {
 
-    return AspectRatio(
-      aspectRatio: videoProvider.controller.value.aspectRatio,
-      child: CameraPreview(videoProvider.controller),
-    );
-  }
+    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
 
-  /// Display the control bar with buttons to take pictures
-  Widget _captureControlRowWidget(context) {
-    return Expanded(
-      child: Align(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            VideoCaptureButton(videoProvider)
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
-    if (videoProvider.cameras == null || videoProvider.cameras.isEmpty) {
-      return Spacer();
-    }
+    if (videoProvider.cameras == null || videoProvider.cameras.isEmpty) return Spacer();
 
     CameraDescription selectedCamera = videoProvider.cameras[videoProvider.selectedCameraIdx];
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
@@ -111,9 +195,15 @@ class _VideoViewState extends State<VideoView> {
           )
       ),
     );
-  }
 
-  Widget _flashToggleRowWidget() {
+  }
+}
+
+class FlashToggleRowWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
 
     IconData iconData;
 
@@ -141,53 +231,7 @@ class _VideoViewState extends State<VideoView> {
           )
       ),
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<VideoProvider>(
-        builder: (ctx, provider, child){
-          return Container(
-            color: options.customizationOptions.bgColor,
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: _cameraPreviewWidget(),
-                  ),
-                  LinearProgressIndicator(
-                    value: provider.getIndicatorProgress(),
-                    valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor),
-                    backgroundColor: Colors.white,
-                  ),
-                  SizedBox(height: 5.0),
-                  Text(
-                    "00 : ${provider.showDuration()}",
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 15.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _cameraTogglesRowWidget(),
-                      _captureControlRowWidget(context),
-                      FutureBuilder<bool>(
-                          future: TorchCompat.hasTorch,
-                          builder: (ctx, snapshot){
-                            return snapshot.hasData && snapshot.data ? _flashToggleRowWidget() : Spacer();
-                          }
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20.0)
-                ],
-              ),
-            ),
-          );
-        }
-    );
   }
 }
 

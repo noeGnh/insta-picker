@@ -1,5 +1,3 @@
-import 'dart:io';
-
 class InstaPickerResult{
 
   List<PickedFile> pickedFiles;
@@ -11,11 +9,10 @@ class InstaPickerResult{
 
 class PickedFile{
 
-  File file;
   String path;
   String name;
 
-  PickedFile({this.file, this.path, this.name});
+  PickedFile({this.path, this.name});
 
 }
 

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
@@ -43,7 +45,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
       child: Stack(
         children: [
           Image.file(
-            _imagePreviewProvider.files.elementAt(index).file,
+            File(_imagePreviewProvider.files.elementAt(index).filePath),
             fit: BoxFit.contain,
           ),
           Positioned(

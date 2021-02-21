@@ -37,27 +37,61 @@ class _PhotoViewState extends State<PhotoView> {
     super.dispose();
   }
 
-  IconData _getCameraLensIcon(CameraLensDirection direction) {
-    switch (direction) {
-      case CameraLensDirection.back:
-        return Icons.camera_rear;
-      case CameraLensDirection.front:
-        return Icons.camera_front;
-      case CameraLensDirection.external:
-        return Icons.camera;
-      default:
-        return Icons.device_unknown;
-    }
-  }
-
-  Widget _cameraPreviewWidget() {
-    if (photoProvider.controller == null || !photoProvider.controller.value.isInitialized) {
-      return const Text(
-        'Chargement...',
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 20.0,
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: options.customizationOptions.bgColor,
+      child: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: CameraPreviewWidget(),
+            ),
+            SizedBox(height: 40.0),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                CameraTogglesRowWidget(mounted),
+                CaptureControlRowWidget(),
+                FutureBuilder<bool>(
+                    future: TorchCompat.hasTorch,
+                    builder: (ctx, snapshot){
+                      return snapshot.hasData && snapshot.data ? FlashToggleRowWidget() : Spacer();
+                    }
+                ),
+              ],
+            ),
+            SizedBox(height: 20.0)
+          ],
         ),
+      ),
+    );
+  }
+}
+
+class CameraPreviewWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    final size = MediaQuery.of(context).size;
+
+    PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
+
+    if (photoProvider.controller == null || !photoProvider.controller.value.isInitialized) {
+      return Stack(
+        children: [
+          Positioned(
+              child: Container(
+                  width: size.width,
+                  child: LinearProgressIndicator(
+                      backgroundColor: options.customizationOptions.bgColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor)
+                  )
+              )
+          )
+        ],
       );
     }
 
@@ -65,10 +99,17 @@ class _PhotoViewState extends State<PhotoView> {
       aspectRatio: photoProvider.controller.value.aspectRatio,
       child: CameraPreview(photoProvider.controller),
     );
-  }
 
-  /// Display the control bar with buttons to take pictures
-  Widget _captureControlRowWidget(context) {
+  }
+}
+
+
+class CaptureControlRowWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
+
     return Expanded(
       child: Align(
         alignment: Alignment.center,
@@ -86,34 +127,63 @@ class _PhotoViewState extends State<PhotoView> {
         ),
       ),
     );
+
+  }
+}
+
+
+class CameraTogglesRowWidget extends StatelessWidget {
+
+  final bool mounted;
+
+  CameraTogglesRowWidget(this.mounted);
+
+  IconData _getCameraLensIcon(CameraLensDirection direction) {
+    switch (direction) {
+      case CameraLensDirection.back:
+        return Icons.camera_rear;
+      case CameraLensDirection.front:
+        return Icons.camera_front;
+      case CameraLensDirection.external:
+        return Icons.camera;
+      default:
+        return Icons.device_unknown;
+    }
   }
 
-  /// Display a row of toggle to select the camera (or a message if no camera is available).
-  Widget _cameraTogglesRowWidget() {
-    if (photoProvider.cameras == null || photoProvider.cameras.isEmpty) {
-      return Spacer();
-    }
+  @override
+  Widget build(BuildContext context) {
+
+    PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
+
+    if (photoProvider.cameras == null || photoProvider.cameras.isEmpty) return Spacer();
 
     CameraDescription selectedCamera = photoProvider.cameras[photoProvider.selectedCameraIdx];
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
       child: Align(
-        alignment: Alignment.centerLeft,
-        child: GestureDetector(
-              child: Padding(
-                  padding: EdgeInsets.only(left: 21),
-                  child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
-              ),
-              onTap: (){
-                photoProvider.onSwitchCamera(mounted);
-              },
-            )
+          alignment: Alignment.centerLeft,
+          child: GestureDetector(
+            child: Padding(
+              padding: EdgeInsets.only(left: 21),
+              child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
+            ),
+            onTap: (){
+              photoProvider.onSwitchCamera(mounted);
+            },
+          )
       ),
     );
-  }
 
-  Widget _flashToggleRowWidget() {
+  }
+}
+
+class FlashToggleRowWidget extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+
+    PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
 
     IconData iconData;
 
@@ -130,54 +200,18 @@ class _PhotoViewState extends State<PhotoView> {
           alignment: Alignment.centerRight,
           child: GestureDetector(
             child: Padding(
-                padding: EdgeInsets.only(right: 21),
-                child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
+              padding: EdgeInsets.only(right: 21),
+              child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               if (photoProvider.controller != null && photoProvider.controller.value.isInitialized){
-                  photoProvider.onFlashButtonPressed();
+                photoProvider.onFlashButtonPressed();
               }
             },
           )
       ),
     );
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Consumer<PhotoProvider>(
-        builder: (ctx, provider, child){
-          return Container(
-            color: options.customizationOptions.bgColor,
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 1,
-                    child: _cameraPreviewWidget(),
-                  ),
-                  SizedBox(height: 40.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      _cameraTogglesRowWidget(),
-                      _captureControlRowWidget(context),
-                      FutureBuilder<bool>(
-                          future: TorchCompat.hasTorch,
-                          builder: (ctx, snapshot){
-                            return snapshot.hasData && snapshot.data ? _flashToggleRowWidget() : Spacer();
-                          }
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 20.0)
-                ],
-              ),
-            ),
-          );
-        }
-    );
   }
 }
 

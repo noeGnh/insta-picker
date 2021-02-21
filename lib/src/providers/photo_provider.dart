@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
 import 'package:insta_picker/insta_picker.dart';
@@ -105,7 +103,12 @@ class PhotoProvider extends ChangeNotifier{
 
       InstaPickerResult result = await Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => ImagePreview(
-              files: [FileModel(file: File(path), path: path, title: basename(path))],
+              files: [
+                FileModel(
+                    filePath: path,
+                    title: basename(path)
+                )
+              ],
               imagePreviewOptions: options,
               showAddButton: false,
             )
