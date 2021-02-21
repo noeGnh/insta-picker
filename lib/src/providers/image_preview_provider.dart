@@ -14,6 +14,10 @@ class ImagePreviewProvider extends ChangeNotifier{
 
   List<FileModel> files = [];
 
+  Translations _translations;
+
+  set translations(Translations translations) { this._translations = translations; }
+
   _updateFiles(FileModel file, File resultFile){
 
     int index = this.files.indexOf(file);
@@ -34,7 +38,7 @@ class ImagePreviewProvider extends ChangeNotifier{
       context,
       new MaterialPageRoute(
         builder: (context) => PhotoFilterSelector(
-          title: Text('Filtres', style: TextStyle(color: options.customizationOptions.iconsColor),),
+          title: Text(this._translations.filters, style: TextStyle(color: options.customizationOptions.iconsColor),),
           image: image,
           filters: presetFiltersList,
           filename: basename(file.filePath),
@@ -87,8 +91,8 @@ class ImagePreviewProvider extends ChangeNotifier{
         iosUiSettings: IOSUiSettings(
           minimumAspectRatio: 1.0,
           title: '',
-          doneButtonTitle: 'Enregistrer',
-          cancelButtonTitle: 'Annuler'
+          doneButtonTitle: this._translations.save,
+          cancelButtonTitle: this._translations.cancel
         )
     );
 

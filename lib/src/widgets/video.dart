@@ -23,8 +23,11 @@ class VideoView extends StatefulWidget {
   _VideoViewState createState() => _VideoViewState();
 }
 
-class _VideoViewState extends State<VideoView> {
+class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixin{
   VideoProvider provider;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _VideoViewState extends State<VideoView> {
     provider =  Provider.of<VideoProvider>(context, listen: false);
     provider.getAvailableCameras(mounted);
 
+    provider.translations = options.translations;
     provider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
   }
 
@@ -44,6 +48,8 @@ class _VideoViewState extends State<VideoView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Container(
       color: options.customizationOptions.bgColor,
       child: SafeArea(
@@ -253,7 +259,7 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
     hasShadow: false,
     content: Material(
       child: Text(
-        "Appuyez longuement pour enregistrer",
+        options.translations.pressAndHoldToRecord,
         softWrap: true,
       ),
     ),

@@ -53,7 +53,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
       backgroundColor: options.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text('Aperçu', style: TextStyle(color: options.customizationOptions.textColor),),
+        title: Text(options.translations.preview, style: TextStyle(color: options.customizationOptions.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,

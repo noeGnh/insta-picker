@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/file_model.dart';
 import 'package:insta_picker/src/models/result.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
 class VideoPreviewProvider extends ChangeNotifier{
 
   final Trimmer _trimmer = Trimmer();
+  final Logger _logger = Logger();
 
   double _startValue = 0.0;
   double _endValue = 0.0;
@@ -47,7 +49,7 @@ class VideoPreviewProvider extends ChangeNotifier{
       startValue: _startValue,
       endValue: _endValue,
       onProgress: (progress) {
-        print('Save Trimmed Video Progress - ${progress.toString()}');
+        _logger.i('Save Trimmed Video Progress - ${progress.toString()}');
       },
     ).then((value) {
 

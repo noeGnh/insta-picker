@@ -5,14 +5,17 @@ class Options{
   bool showGalleryTab;
   bool showPhotoTab;
   bool showVideoTab;
+  Translations translations;
   CustomizationOptions customizationOptions;
 
   Options({
     this.showGalleryTab = true,
     this.showPhotoTab = true,
     this.showVideoTab = true,
+    Translations translations,
     CustomizationOptions customizationOptions
-  }) : this.customizationOptions = customizationOptions ?? CustomizationOptions();
+  }) :  this.translations = translations ?? Translations(),
+        this.customizationOptions = customizationOptions ?? CustomizationOptions();
 
 }
 
@@ -49,13 +52,11 @@ class CustomizationOptions{
 }
 
 class GalleryCustomization{
-  String title;
   Color gridBgColor;
   int maxSelectable;
   Color selectedFileContainerColor;
 
   GalleryCustomization({
-    this.title = 'Gallery',
     this.maxSelectable = 1,
     this.gridBgColor = Colors.white,
     this.selectedFileContainerColor = Colors.white,
@@ -67,17 +68,47 @@ class GalleryCustomization{
 }
 
 class PhotoCustomization{
-  String title;
-
-  PhotoCustomization({this.title = 'Photo'});
+  PhotoCustomization();
 }
 
 class VideoCustomization{
-  String title;
   Duration maximumRecordingDuration;
 
   VideoCustomization({
-    this.title = 'Video',
     this.maximumRecordingDuration = const Duration(seconds: 30)
   }) : assert(maximumRecordingDuration.inSeconds > 0 && maximumRecordingDuration.inSeconds <= 60);
+}
+
+class Translations{
+
+  String galleryTabTitle;
+  String photoTabTitle;
+  String videoTabTitle;
+  String pressAndHoldToRecord;
+  String preview;
+  String multiSelectionDoesntSupportVideos;
+  String filters;
+  String save;
+  String cancel;
+  String recordedVideo;
+  String whatDoYouWantToDo;
+  String delete;
+  String validate;
+
+  Translations({
+    this.galleryTabTitle = 'Gallery',
+    this.photoTabTitle = 'Photo',
+    this.videoTabTitle = 'Video',
+    this.pressAndHoldToRecord = 'Press and hold to record',
+    this.preview = 'Preview',
+    this.multiSelectionDoesntSupportVideos = 'Multi-selection does not support videos',
+    this.filters = 'Filters',
+    this.save = 'Save',
+    this.cancel = 'Cancel',
+    this.recordedVideo = 'Recorded Video',
+    this.whatDoYouWantToDo = 'What do you want to do ?',
+    this.delete = 'Delete',
+    this.validate = 'Validate'
+  });
+
 }

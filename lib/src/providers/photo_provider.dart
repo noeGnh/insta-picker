@@ -4,10 +4,13 @@ import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
 import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 class PhotoProvider extends ChangeNotifier{
+
+  final Logger logger = Logger();
 
   CameraController controller;
   int selectedCameraIdx;
@@ -44,10 +47,10 @@ class PhotoProvider extends ChangeNotifier{
         _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
 
       }else{
-        print("No camera available");
+        logger.w("No camera available");
       }
     }).catchError((e) {
-      print('Error: $e.code\nError Message: $e.message');
+      logger.e('Error: ${e.code}\nError Message: $e.message');
     });
 
   }
@@ -66,14 +69,14 @@ class PhotoProvider extends ChangeNotifier{
       }
 
       if (controller.value.hasError) {
-        print('Camera error ${controller.value.errorDescription}');
+        logger.e('Camera error ${controller.value.errorDescription}');
       }
     });
 
     try {
       await controller.initialize();
     } on CameraException catch (e) {
-      print(e);
+      logger.e(e);
     }
 
     if (mounted) {
@@ -118,7 +121,7 @@ class PhotoProvider extends ChangeNotifier{
       if (result != null) Navigator.pop(context, result);
 
     } catch (e) {
-      print(e);
+      logger.e(e);
     }
 
   }

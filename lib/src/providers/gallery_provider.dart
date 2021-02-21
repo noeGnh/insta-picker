@@ -21,7 +21,10 @@ class GalleryProvider extends ChangeNotifier{
 
   final Logger logger = Logger();
 
+  static const int VIDEO_LENGTH_LIMIT = 30;
+
   FileModel _selectedFile;
+  Translations _translations;
   FolderModel _selectedFolder;
   List<FileModel> _files = [];
   List<FolderModel> _folders = [];
@@ -51,6 +54,8 @@ class GalleryProvider extends ChangeNotifier{
 
   set selectedFile(FileModel file){ this._selectedFile = file; notifyListeners(); }
 
+  set translations(Translations translations){ this._translations = translations; }
+
   getCheckNumber(FileModel file) => this._files.indexOf(file) + 1;
 
   getCheckState(FileModel file) => this._files.contains(file);
@@ -60,12 +65,12 @@ class GalleryProvider extends ChangeNotifier{
       this._files.remove(file);
     }else{
       if (file.type == AssetType.video) {
-        Utils.showToast('La multi-selection ne supporte pas les vidéos.');
+        Utils.showToast(this._translations.multiSelectionDoesntSupportVideos);
         return;
       }
 
       if (this._files.length >= this._multiSelectLimit) {
-        Utils.showToast('La limite est de ${this._multiSelectLimit} images.');
+        logger.w('The limit is ${this._multiSelectLimit} images.');
         return;
       }
 
@@ -134,7 +139,7 @@ class GalleryProvider extends ChangeNotifier{
           filterOption: FilterOptionGroup()
             ..setOption(AssetType.video, FilterOption(
                 durationConstraint: const DurationConstraint(
-                  max: Duration(minutes: 30),
+                  max: Duration(minutes: VIDEO_LENGTH_LIMIT),
                 )
             ))
       );
@@ -259,7 +264,7 @@ class GalleryProvider extends ChangeNotifier{
         
         if (this._selectedFile.type == AssetType.video) {
 
-          if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes < 10) {
+          if (this._selectedFile.duration != null && this._selectedFile.duration.inMinutes <= VIDEO_LENGTH_LIMIT) {
 
             Future.delayed(Duration(milliseconds: 1000), () async { pauseVideo(); });
 
@@ -270,7 +275,7 @@ class GalleryProvider extends ChangeNotifier{
             if (result != null) Navigator.pop(context, result);
 
           } else {
-            Utils.showToast('Vidéo est trop longue !');
+            logger.w('Too long video !');
           }
 
         } else {
@@ -280,7 +285,7 @@ class GalleryProvider extends ChangeNotifier{
         }
 
       }else{
-        Utils.showToast('Aucun fichier sélectionné');
+        logger.i('No file selected');
       }
       
     }

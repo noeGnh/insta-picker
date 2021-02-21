@@ -64,24 +64,22 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
 
     if (widget.options.showGalleryTab){
       _pages.add(Gallery(galleryViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.customizationOptions.galleryCustomization.title));
+      _tabs.add(Tab(text: widget.options.translations.galleryTabTitle));
     }
 
     if (widget.options.showPhotoTab){
       _pages.add(Photo(photoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.customizationOptions.photoCustomization.title));
+      _tabs.add(Tab(text: widget.options.translations.photoTabTitle));
     }
 
     if (widget.options.showVideoTab){
       _pages.add(Video(videoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.customizationOptions.videoCustomization.title));
+      _tabs.add(Tab(text: widget.options.translations.videoTabTitle));
     }
 
     _pickerProvider =  Provider.of<PickerProvider>(context, listen: false);
     _pickerProvider.tabController = TabController(length: _pages.length, vsync: this);
     _pickerProvider.pageController = PageController();
-
-    _pickerProvider.addTabListener(context);
   }
 
   @override
@@ -101,6 +99,7 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                children: _pages,
                onPageChanged: (index){
                   provider.onPageChange(context, index);
+                  if(!provider.pageIsChanging) provider.pageIsChanging = true;
                },
              ),
              bottomNavigationBar: SizedBox(
@@ -112,6 +111,10 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                  labelColor: widget.options.customizationOptions.tabBarTextColor,
                  indicatorColor: widget.options.customizationOptions.tabBarIndicatorColor,
                  unselectedLabelColor: widget.options.customizationOptions.tabBarTextColor,
+                 onTap: (index){
+                   provider.onPageChange(context, index);
+                   if(!provider.pageIsChanging) provider.pageIsChanging = true;
+                 },
                ),
              ),
            );

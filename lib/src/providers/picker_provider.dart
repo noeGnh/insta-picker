@@ -11,25 +11,17 @@ class PickerProvider extends ChangeNotifier{
   PageController pageController;
   TabController tabController;
 
-  void addTabListener(BuildContext context){
-
-    if (tabController == null) return;
-
-    tabController.addListener(() {
-
-      if (tabController.indexIsChanging) onPageChange(context, tabController.index);
-
-    });
-
-  }
+  bool pageIsChanging = false;
 
   void onPageChange(BuildContext context, int index) async {
 
-    if (tabController == null || pageController == null) return;
+    if (tabController == null || pageController == null || pageIsChanging) return;
 
     await pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
 
     tabController.animateTo(index);
+
+    pageIsChanging = false;
 
     GalleryProvider galleryProvider = Provider.of<GalleryProvider>(context, listen: false);
 

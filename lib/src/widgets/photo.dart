@@ -21,8 +21,11 @@ class PhotoView extends StatefulWidget {
   _PhotoViewState createState() => _PhotoViewState();
 }
 
-class _PhotoViewState extends State<PhotoView> {
+class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixin{
   PhotoProvider photoProvider;
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {
@@ -39,6 +42,8 @@ class _PhotoViewState extends State<PhotoView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Container(
       color: options.customizationOptions.bgColor,
       child: SafeArea(

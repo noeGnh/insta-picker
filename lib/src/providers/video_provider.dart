@@ -2,12 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_better_camera/camera.dart';
+import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/models/result.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 class VideoProvider extends ChangeNotifier{
+
+  final Logger logger = Logger();
 
   CameraController controller;
   int selectedCameraIdx;
@@ -17,6 +21,12 @@ class VideoProvider extends ChangeNotifier{
   Timer _timer;
   int _duration;
   int _durationLimit;
+
+  Translations _translations;
+
+  set translations(Translations translations){
+    this._translations = translations;
+  }
 
   FlashMode flashMode = FlashMode.off;
 
@@ -48,10 +58,10 @@ class VideoProvider extends ChangeNotifier{
         _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
 
       }else{
-        print("No camera available");
+        logger.w("No camera available");
       }
     }).catchError((e) {
-      print('Error: $e.code\nError Message: $e.message');
+      logger.e('Error: ${e.code}\nError Message: $e.message');
     });
 
   }
@@ -68,14 +78,14 @@ class VideoProvider extends ChangeNotifier{
       if (mounted) notifyListeners();
 
       if (controller.value.hasError) {
-        print('Camera error ${controller.value.errorDescription}');
+        logger.e('Camera error ${controller.value.errorDescription}');
       }
     });
 
     try {
       await controller.initialize();
     } on CameraException catch (e) {
-      print(e);
+      logger.e(e);
     }
 
     if (mounted) notifyListeners();
@@ -109,7 +119,7 @@ class VideoProvider extends ChangeNotifier{
 
     } on CameraException catch (e) {
 
-      print(e);
+      logger.e(e);
       videoPath = null;
 
     }
@@ -128,7 +138,7 @@ class VideoProvider extends ChangeNotifier{
       cancelTimer();
 
     } on CameraException catch (e) {
-      print(e);
+      logger.e(e);
     }
 
     if (mounted) notifyListeners();
@@ -139,17 +149,17 @@ class VideoProvider extends ChangeNotifier{
       builder: (BuildContext context) {
 
         return AlertDialog(
-          title: new Text('Vidéo enregistrée', style: TextStyle(fontWeight: FontWeight.bold),),
-          content: new Text('Que voulez-vous faire ?'),
+          title: new Text(this._translations.recordedVideo, style: TextStyle(fontWeight: FontWeight.bold),),
+          content: new Text(this._translations.whatDoYouWantToDo),
           actions: <Widget>[
             new FlatButton(
-                child: new Text('Supprimer'),
+                child: new Text(this._translations.delete),
                 onPressed: (){
                   Navigator.of(context, rootNavigator: true).pop();
                 }
             ),
             new FlatButton(
-                child: new Text('Valider'),
+                child: new Text(this._translations.validate),
                 onPressed: (){
 
                   Navigator.of(context, rootNavigator: true).pop();
@@ -225,6 +235,6 @@ class VideoProvider extends ChangeNotifier{
     return _duration.toString().length < 2 ? '0$_duration' : '$_duration';
   }
 
-  set durationLimit(int d) { _durationLimit = d <= 59 ? d : 59; }
+  set durationLimit(int d) { _durationLimit = d <= 60 ? d : 60; }
 
 }

@@ -39,6 +39,8 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
     galleryProvider =  Provider.of<GalleryProvider>(context, listen: false);
     galleryProvider.getFilesPath();
+
+    galleryProvider.translations = options.translations;
   }
 
   @override
