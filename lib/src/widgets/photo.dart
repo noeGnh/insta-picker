@@ -1,5 +1,5 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_better_camera/camera.dart';
 import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
@@ -32,7 +32,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
     super.initState();
 
     photoProvider =  Provider.of<PhotoProvider>(context, listen: false);
-    photoProvider.getAvailableCameras(mounted);
+    // photoProvider.getAvailableCameras(mounted);
   }
 
   @override
@@ -123,6 +123,7 @@ class CaptureControlRowWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.max,
           children: [
             FloatingActionButton(
+                heroTag: null,
                 child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
                 backgroundColor: options.customizationOptions.iconsColor,
                 onPressed: () {
@@ -193,7 +194,7 @@ class FlashToggleRowWidget extends StatelessWidget {
     IconData iconData;
 
     switch(photoProvider.flashMode){
-      case FlashMode.autoFlash:  iconData = Icons.flash_auto; break;
+      case FlashMode.auto:  iconData = Icons.flash_auto; break;
 
       case FlashMode.torch: iconData = Icons.flash_on; break;
 

@@ -1,11 +1,10 @@
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_better_camera/camera.dart';
+import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/video_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 import 'package:torch_compat/torch_compat.dart';
-
-import '../../insta_picker.dart';
 
 Options options;
 
@@ -34,7 +33,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
     super.initState();
 
     provider =  Provider.of<VideoProvider>(context, listen: false);
-    provider.getAvailableCameras(mounted);
+    // provider.getAvailableCameras(mounted);
 
     provider.translations = options.translations;
     provider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
@@ -214,7 +213,7 @@ class FlashToggleRowWidget extends StatelessWidget {
     IconData iconData;
 
     switch(videoProvider.flashMode){
-      case FlashMode.autoFlash:  iconData = Icons.flash_auto; break;
+      case FlashMode.auto:  iconData = Icons.flash_auto; break;
 
       case FlashMode.torch: iconData = Icons.flash_on; break;
 
@@ -271,6 +270,7 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
       onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
       onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
       child: FloatingActionButton(
+        heroTag: null,
         child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
         backgroundColor: options.customizationOptions.iconsColor,
         onPressed: () => widget.videoProvider.manageTooltip(context, superTooltip),

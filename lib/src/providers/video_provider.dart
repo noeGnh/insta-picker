@@ -1,12 +1,11 @@
 import 'dart:async';
 
+import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_better_camera/camera.dart';
 import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/models/result.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
 class VideoProvider extends ChangeNotifier{
@@ -32,7 +31,7 @@ class VideoProvider extends ChangeNotifier{
 
   Future<void> onFlashButtonPressed() async {
     switch (flashMode){
-      case FlashMode.torch: flashMode = FlashMode.autoFlash; break;
+      case FlashMode.torch: flashMode = FlashMode.auto; break;
 
       case FlashMode.off: flashMode = FlashMode.torch; break;
 
@@ -60,6 +59,7 @@ class VideoProvider extends ChangeNotifier{
       }else{
         logger.w("No camera available");
       }
+
     }).catchError((e) {
       logger.e('Error: ${e.code}\nError Message: $e.message');
     });
@@ -107,15 +107,12 @@ class VideoProvider extends ChangeNotifier{
 
     if (!controller.value.isInitialized) return null;
 
-    final filePath = join((await getTemporaryDirectory()).path, '${DateTime.now()}.mp4',);
-
     if (controller.value.isRecordingVideo) return null;
 
     try {
 
       _startTimer(context, mounted);
-      await controller.startVideoRecording(filePath);
-      videoPath = filePath;
+      await controller.startVideoRecording();
 
     } on CameraException catch (e) {
 
@@ -134,7 +131,10 @@ class VideoProvider extends ChangeNotifier{
 
     try {
 
-      await controller.stopVideoRecording();
+      await controller.stopVideoRecording().then((XFile file){
+        videoPath = file.path;
+      });
+
       cancelTimer();
 
     } on CameraException catch (e) {
