@@ -41,6 +41,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
 
   @override
   void dispose() {
+    provider.controller.dispose();
     provider.cancelTimer();
     super.dispose();
   }
