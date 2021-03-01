@@ -81,17 +81,19 @@ class GalleryProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  ChewieController initVideoController(File file) {
+  void initVideoController(File file) {
 
     if (oldVideoFilePath == null || File(oldVideoFilePath) != file) {
 
       VideoPlayerController videoPlayerController = VideoPlayerController.file(file);
 
+      videoPlayerController.setVolume(0.0);
+
       ChewieController chewieController = ChewieController(
         videoPlayerController: videoPlayerController,
         allowedScreenSleep: false,
         allowFullScreen: false,
-        aspectRatio: 3 / 2,
+        aspectRatio: 1,
         autoPlay: true,
         looping: false,
       );
@@ -100,11 +102,7 @@ class GalleryProvider extends ChangeNotifier{
       this.chewieController = chewieController;
       this.videoPlayerController = videoPlayerController;
 
-      return chewieController;
-
     }
-
-    return this.chewieController;
 
   }
 
@@ -158,6 +156,8 @@ class GalleryProvider extends ChangeNotifier{
           File file = await assetList[y].file; File thumbFile;
 
           if (assetList[y].type != AssetType.image && assetList[y].type != AssetType.video) return;
+
+          if (!['.mp4', '.mov', '.png', '.jpg', '.jpeg', '.gif'].contains(extension(file.path).toLowerCase())) return;
 
           try{
 
