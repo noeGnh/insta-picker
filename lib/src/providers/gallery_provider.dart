@@ -129,7 +129,7 @@ class GalleryProvider extends ChangeNotifier{
 
     if (!await Permission.storage.request().isGranted) return;
 
-    final String cacheDir = '${(await getApplicationDocumentsDirectory()).path}/instaPicker';
+    final String cacheDir = '${(await getTemporaryDirectory()).path}/galleryPicker';
 
     var result = await PhotoManager.requestPermission();
     if (result) {
@@ -154,13 +154,16 @@ class GalleryProvider extends ChangeNotifier{
         await Future.wait(
             assetList.map((asset) async {
 
-              File f = await asset.file; File thumbFile;
+              File file = await asset.file; File thumbFile;
 
               if (asset.type != AssetType.image && asset.type != AssetType.video) return;
 
               try{
 
-                String thumbPath = '$cacheDir/${basename(f.path).split('.')[0] + (asset.type == AssetType.video ? '.mp4' : '')}.jpg';
+                String thumbName =
+                  (basename(file.path).split('.')[0] + path.id +
+                  (asset.type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
+                String thumbPath = '$cacheDir/$thumbName.jpg';
 
                 if (await File(thumbPath).exists()) {
 
@@ -194,7 +197,7 @@ class GalleryProvider extends ChangeNotifier{
                   longitude: asset.longitude,
                   title: asset.title,
                   relativePath: asset.relativePath,
-                  filePath: f.path,
+                  filePath: file.path,
                   thumbPath: thumbFile.path
               ));
 
