@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
@@ -16,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 
 class GalleryProvider extends ChangeNotifier{
 
@@ -170,7 +172,27 @@ class GalleryProvider extends ChangeNotifier{
 
             } else {
 
-              Uint8List thumbBytes = await assetList[y].thumbData;
+              Uint8List thumbBytes;
+
+              if (assetList[y].type == AssetType.video){
+
+                thumbBytes = await VideoThumbnail.thumbnailData(
+                  video: file.path,
+                  imageFormat: ImageFormat.JPEG,
+                  maxWidth: 128,
+                  quality: 95,
+                );
+
+              }else{
+
+                thumbBytes = await FlutterImageCompress.compressWithFile(
+                    file.path,
+                    minHeight: 144,
+                    minWidth: 144,
+                    quality: 95,
+                );
+
+              }
 
               thumbFile = await File(thumbPath).create(recursive: true);
 
