@@ -151,58 +151,56 @@ class GalleryProvider extends ChangeNotifier{
         List<FileModel> fileList = [];
         List<AssetEntity> assetList = await path.assetList;
 
-        await Future.wait(
-            assetList.map((asset) async {
+        for(int y = 0; y < assetList.length; y++){
 
-              File file = await asset.file; File thumbFile;
+          File file = await assetList[y].file; File thumbFile;
 
-              if (asset.type != AssetType.image && asset.type != AssetType.video) return;
+          if (assetList[y].type != AssetType.image && assetList[y].type != AssetType.video) return;
 
-              try{
+          try{
 
-                String thumbName =
-                  (basename(file.path).split('.')[0] + path.id +
-                  (asset.type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
-                String thumbPath = '$cacheDir/$thumbName.jpg';
+            String thumbName =
+            (basename(file.path).split('.')[0] + path.id +
+            (assetList[y].type == AssetType.video ? '.mp4' : '')).replaceAll(' ', '');
+            String thumbPath = '$cacheDir/$thumbName.jpg';
 
-                if (await File(thumbPath).exists()) {
+            if (await File(thumbPath).exists()) {
 
-                  thumbFile = File(thumbPath);
+              thumbFile = File(thumbPath);
 
-                } else {
+            } else {
 
-                  Uint8List thumbBytes = await asset.thumbData;
+              Uint8List thumbBytes = await assetList[y].thumbData;
 
-                  thumbFile = await File(thumbPath).create(recursive: true);
+              thumbFile = await File(thumbPath).create(recursive: true);
 
-                  thumbFile = await thumbFile.writeAsBytes(thumbBytes);
+              thumbFile = await thumbFile.writeAsBytes(thumbBytes);
 
-                  assert(thumbFile != null);
+              assert(thumbFile != null);
 
-                }
+            }
 
-              }catch(e){
-                print(e);
-              }
+          }catch(e){
+            print(e);
+          }
 
-              fileList.add(FileModel(
-                  duration: asset.videoDuration,
-                  type: asset.type,
-                  size: asset.size,
-                  width: asset.width,
-                  height: asset.height,
-                  createDt: asset.createDateTime,
-                  modifiedDt: asset.modifiedDateTime,
-                  latitude: asset.latitude,
-                  longitude: asset.longitude,
-                  title: asset.title,
-                  relativePath: asset.relativePath,
-                  filePath: file.path,
-                  thumbPath: thumbFile.path
-              ));
+          fileList.add(FileModel(
+              duration: assetList[y].videoDuration,
+              type: assetList[y].type,
+              size: assetList[y].size,
+              width: assetList[y].width,
+              height: assetList[y].height,
+              createDt: assetList[y].createDateTime,
+              modifiedDt: assetList[y].modifiedDateTime,
+              latitude: assetList[y].latitude,
+              longitude: assetList[y].longitude,
+              title: assetList[y].title,
+              relativePath: assetList[y].relativePath,
+              filePath: file.path,
+              thumbPath: thumbFile.path
+          ));
 
-            }).toList()
-        );
+        }
 
         if (fileList.isEmpty) return;
 
