@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:insta_picker/src/providers/gallery_provider.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:insta_picker/src/providers/video_provider.dart';
 import 'package:provider/provider.dart';
@@ -27,20 +26,16 @@ class PickerProvider extends ChangeNotifier{
 
     PhotoProvider photoProvider = Provider.of<PhotoProvider>(context, listen: false);
     VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: false);
-    GalleryProvider galleryProvider = Provider.of<GalleryProvider>(context, listen: false);
 
     switch(index){
       case GALLERY_PAGE_INDEX:
-        galleryProvider.playVideo();
         break;
 
       case PHOTO_PAGE_INDEX:
-        galleryProvider.pauseVideo();
         photoProvider.getAvailableCameras(true);
         break;
 
       case VIDEO_PAGE_INDEX:
-        galleryProvider.pauseVideo();
         videoProvider.getAvailableCameras(true);
         break;
     }
