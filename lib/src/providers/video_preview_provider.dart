@@ -61,8 +61,8 @@ class VideoPreviewProvider extends ChangeNotifier{
         files.map((file) {
           pickedFiles.add(
               PickedFile(
-                  path: value,
-                  name: basename(value)
+                  path: Platform.isIOS ? files[0].filePath : value,
+                  name: basename(Platform.isIOS ? files[0].filePath : value)
               )
           );
         }).toList();
