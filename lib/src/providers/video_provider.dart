@@ -152,13 +152,13 @@ class VideoProvider extends ChangeNotifier{
           title: new Text(this._translations.recordedVideo, style: TextStyle(fontWeight: FontWeight.bold),),
           content: new Text(this._translations.whatDoYouWantToDo),
           actions: <Widget>[
-            new FlatButton(
+            new TextButton(
                 child: new Text(this._translations.delete),
                 onPressed: (){
                   Navigator.of(context, rootNavigator: true).pop();
                 }
             ),
-            new FlatButton(
+            new TextButton(
                 child: new Text(this._translations.validate),
                 onPressed: (){
 

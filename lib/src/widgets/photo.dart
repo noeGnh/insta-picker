@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:torch_compat/torch_compat.dart';
+
 
 Options options;
 
@@ -61,12 +61,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
               children: [
                 CameraTogglesRowWidget(mounted),
                 CaptureControlRowWidget(),
-                FutureBuilder<bool>(
-                    future: TorchCompat.hasTorch,
-                    builder: (ctx, snapshot){
-                      return snapshot.hasData && snapshot.data ? FlashToggleRowWidget() : Spacer();
-                    }
-                ),
+                FlashToggleRowWidget(),
               ],
             ),
             SizedBox(height: 20.0)

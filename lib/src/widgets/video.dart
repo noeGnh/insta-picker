@@ -4,7 +4,6 @@ import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/video_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
-import 'package:torch_compat/torch_compat.dart';
 
 Options options;
 
@@ -88,12 +87,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
               children: [
                 CameraTogglesRowWidget(mounted),
                 CaptureControlRowWidget(),
-                FutureBuilder<bool>(
-                    future: TorchCompat.hasTorch,
-                    builder: (ctx, snapshot){
-                      return snapshot.hasData && snapshot.data ? FlashToggleRowWidget() : Spacer();
-                    }
-                ),
+                FlashToggleRowWidget(),
               ],
             ),
             SizedBox(height: 20.0)
