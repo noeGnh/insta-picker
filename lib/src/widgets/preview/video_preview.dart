@@ -5,13 +5,13 @@ import 'package:insta_picker/src/providers/video_preview_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-Options options;
+Options? options;
 
 class VideoPreview extends StatelessWidget {
 
-  final List<FileModel> files;
+  final List<FileModel?>? files;
 
-  VideoPreview({@required Options imagePreviewOptions, this.files}){
+  VideoPreview({required Options? imagePreviewOptions, this.files}){
     options = imagePreviewOptions;
   }
 
@@ -26,16 +26,16 @@ class VideoPreview extends StatelessWidget {
 }
 
 class VideoPreviewContent extends StatefulWidget {
-  final List<FileModel> files;
+  final List<FileModel?>? files;
 
-  VideoPreviewContent({Key key, this.files}) : super(key: key);
+  VideoPreviewContent({Key? key, this.files}) : super(key: key);
 
   @override
   _VideoPreviewContentState createState() => _VideoPreviewContentState();
 }
 
 class _VideoPreviewContentState extends State<VideoPreviewContent> {
-  VideoPreviewProvider _videoPreviewProvider;
+  late VideoPreviewProvider _videoPreviewProvider;
 
   @override
   void initState() {
@@ -48,14 +48,14 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: options.customizationOptions.bgColor,
+      backgroundColor: options!.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(options.translations.preview, style: TextStyle(color: options.customizationOptions.textColor),),
+        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.textColor),),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
-            color: options.customizationOptions.iconsColor,
+            color: options!.customizationOptions.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -67,7 +67,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options.customizationOptions.iconsColor,
+                color:options!.customizationOptions.iconsColor,
               ),
             ),
             onTap: (){
@@ -75,7 +75,7 @@ class _VideoPreviewContentState extends State<VideoPreviewContent> {
             },
           )
         ],
-        backgroundColor: options.customizationOptions.appBarColor,
+        backgroundColor: options!.customizationOptions.appBarColor,
       ),
       body: FutureBuilder(
         future: _videoPreviewProvider.loadVideoTrimmer(),
@@ -113,21 +113,22 @@ class _TrimmerViewState extends State<TrimmerView> {
                 Visibility(
                   visible: provider.progressVisibility,
                   child: LinearProgressIndicator(
-                    backgroundColor: options.customizationOptions.accentColor,
+                    backgroundColor: options!.customizationOptions.accentColor,
                   ),
                 ),
                 Expanded(
-                  child: VideoViewer(),
+                  child: VideoViewer(trimmer: provider.trimmer),
                 ),
                 Center(
                   child: TrimEditor(
                     viewerHeight: 50.0,
+                    trimmer: provider.trimmer,
                     viewerWidth: MediaQuery.of(context).size.width,
-                    maxVideoLength: Duration(seconds: options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds),
-                    durationTextStyle: TextStyle(color: options.customizationOptions.textColor),
-                    scrubberPaintColor: options.customizationOptions.accentColor,
-                    borderPaintColor: options.customizationOptions.accentColor,
-                    circlePaintColor: options.customizationOptions.accentColor,
+                    maxVideoLength: Duration(seconds: options!.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds),
+                    durationTextStyle: TextStyle(color: options!.customizationOptions.textColor),
+                    scrubberPaintColor: options!.customizationOptions.accentColor,
+                    borderPaintColor: options!.customizationOptions.accentColor,
+                    circlePaintColor: options!.customizationOptions.accentColor,
                     onChangeStart: (value) {
                       provider.startValue = value;
                     },
@@ -140,19 +141,19 @@ class _TrimmerViewState extends State<TrimmerView> {
                   ),
                 ),
                 TextButton(
-                  child: provider.isPlaying
+                  child: provider.isPlaying!
                       ? Icon(
                     Icons.pause,
                     size: 80.0,
-                    color: options.customizationOptions.iconsColor,
+                    color: options!.customizationOptions.iconsColor,
                   )
                       : Icon(
                     Icons.play_arrow,
                     size: 80.0,
-                    color: options.customizationOptions.iconsColor,
+                    color: options!.customizationOptions.iconsColor,
                   ),
                   onPressed: () async {
-                    bool playbackState = await provider.trimmer.videPlaybackControl(
+                    bool? playbackState = await provider.trimmer.videPlaybackControl(
                       startValue: provider.startValue,
                       endValue: provider.endValue,
                     );

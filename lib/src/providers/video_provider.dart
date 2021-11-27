@@ -12,16 +12,16 @@ class VideoProvider extends ChangeNotifier{
 
   final Logger logger = Logger();
 
-  CameraController controller;
-  int selectedCameraIdx;
-  String videoPath;
-  List cameras;
+  CameraController? controller;
+  late int selectedCameraIdx;
+  String? videoPath;
+  List? cameras;
 
-  Timer _timer;
-  int _duration;
-  int _durationLimit;
+  Timer? _timer;
+  int? _duration;
+  int? _durationLimit;
 
-  Translations _translations;
+  late Translations _translations;
 
   set translations(Translations translations){
     this._translations = translations;
@@ -38,7 +38,7 @@ class VideoProvider extends ChangeNotifier{
       default: flashMode = FlashMode.off;
     }
 
-    await controller.setFlashMode(flashMode);
+    await controller!.setFlashMode(flashMode);
 
     notifyListeners();
   }
@@ -48,13 +48,13 @@ class VideoProvider extends ChangeNotifier{
     availableCameras().then((availableCameras) {
 
       cameras = availableCameras;
-      if (cameras.length > 0) {
+      if (cameras!.length > 0) {
 
         selectedCameraIdx = 0;
 
         notifyListeners();
 
-        _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
+        _initCameraController(cameras![selectedCameraIdx], mounted).then((void v) {});
 
       }else{
         logger.w("No camera available");
@@ -68,22 +68,22 @@ class VideoProvider extends ChangeNotifier{
 
   Future _initCameraController(CameraDescription cameraDescription, bool mounted) async {
     if (controller != null) {
-      await controller.dispose();
+      await controller!.dispose();
     }
 
     controller = CameraController(cameraDescription, ResolutionPreset.medium);
 
-    controller.addListener(() {
+    controller!.addListener(() {
 
       if (mounted) notifyListeners();
 
-      if (controller.value.hasError) {
-        logger.e('Camera error ${controller.value.errorDescription}');
+      if (controller!.value.hasError) {
+        logger.e('Camera error ${controller!.value.errorDescription}');
       }
     });
 
     try {
-      await controller.initialize();
+      await controller!.initialize();
     } on CameraException catch (e) {
       logger.e(e);
     }
@@ -93,26 +93,26 @@ class VideoProvider extends ChangeNotifier{
 
   void refreshCamera(bool mounted) {
     Future.delayed(Duration(milliseconds: 1000), () async {
-      _initCameraController(cameras[0], mounted);
+      _initCameraController(cameras![0], mounted);
     });
   }
 
   void onSwitchCamera(bool mounted) {
-    selectedCameraIdx = selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
-    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    selectedCameraIdx = selectedCameraIdx < cameras!.length - 1 ? selectedCameraIdx + 1 : 0;
+    CameraDescription selectedCamera = cameras![selectedCameraIdx];
     _initCameraController(selectedCamera, mounted);
   }
 
   void startVideoRecording(BuildContext context, bool mounted) async {
 
-    if (!controller.value.isInitialized) return null;
+    if (!controller!.value.isInitialized) return null;
 
-    if (controller.value.isRecordingVideo) return null;
+    if (controller!.value.isRecordingVideo) return null;
 
     try {
 
       _startTimer(context, mounted);
-      await controller.startVideoRecording();
+      await controller!.startVideoRecording();
 
     } on CameraException catch (e) {
 
@@ -127,11 +127,11 @@ class VideoProvider extends ChangeNotifier{
 
   void stopVideoRecording(BuildContext context, bool mounted) async {
 
-    if (!controller.value.isRecordingVideo) return null;
+    if (!controller!.value.isRecordingVideo) return null;
 
     try {
 
-      await controller.stopVideoRecording().then((XFile file){
+      await controller!.stopVideoRecording().then((XFile file){
         videoPath = file.path;
       });
 
@@ -170,7 +170,7 @@ class VideoProvider extends ChangeNotifier{
                           pickedFiles: [
                             PickedFile(
                                 path: videoPath,
-                                name: basename(videoPath)
+                                name: basename(videoPath!)
                             )
                           ],
                           resultType: ResultType.VIDEO
@@ -188,15 +188,13 @@ class VideoProvider extends ChangeNotifier{
 
   void manageTooltip(BuildContext context, SuperTooltip tooltip){
 
-    if (tooltip != null) {
-      if (tooltip.isOpen){
-        tooltip.close();
-      }else {
-        tooltip.show(context);
-        Future.delayed(const Duration(milliseconds: 2000), () {
-          if (tooltip != null && tooltip.isOpen) tooltip.close();
-        });
-      }
+    if (tooltip.isOpen){
+      tooltip.close();
+    }else {
+      tooltip.show(context);
+      Future.delayed(const Duration(milliseconds: 2000), () {
+        if (tooltip.isOpen) tooltip.close();
+      });
     }
 
   }
@@ -208,12 +206,12 @@ class VideoProvider extends ChangeNotifier{
 
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
           notifyListeners();
-          if (_duration >= _durationLimit) {
+          if (_duration! >= _durationLimit!) {
 
             stopVideoRecording(context, mounted);
 
           } else {
-            _duration += 1;
+            _duration = _duration! + 1;
           }
         },
     );
@@ -221,12 +219,12 @@ class VideoProvider extends ChangeNotifier{
   }
 
   void cancelTimer(){
-    if (_timer != null) _timer.cancel(); _timer = null;
+    if (_timer != null) _timer!.cancel(); _timer = null;
     _duration = 0;
   }
 
   double getIndicatorProgress() {
-    return _duration != null && _durationLimit != null ? _duration / _durationLimit : 0.0;
+    return _duration != null && _durationLimit != null ? _duration! / _durationLimit! : 0.0;
   }
 
   String showDuration() {

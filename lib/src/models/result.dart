@@ -1,7 +1,7 @@
 class InstaPickerResult{
 
-  List<PickedFile> pickedFiles;
-  ResultType resultType;
+  List<PickedFile>? pickedFiles;
+  ResultType? resultType;
 
   InstaPickerResult({this.pickedFiles, this.resultType});
 
@@ -9,8 +9,8 @@ class InstaPickerResult{
 
 class PickedFile{
 
-  String path;
-  String name;
+  String? path;
+  String? name;
 
   PickedFile({this.path, this.name});
 

@@ -12,8 +12,8 @@ class Options{
     this.showGalleryTab = true,
     this.showPhotoTab = true,
     this.showVideoTab = true,
-    Translations translations,
-    CustomizationOptions customizationOptions
+    Translations? translations,
+    CustomizationOptions? customizationOptions
   }) :  this.translations = translations ?? Translations(),
         this.customizationOptions = customizationOptions ?? CustomizationOptions();
 
@@ -42,9 +42,9 @@ class CustomizationOptions{
     this.tabBarColor = Colors.white,
     this.tabBarTextColor = Colors.black,
     this.tabBarIndicatorColor = Colors.black,
-    GalleryCustomization galleryCustomization,
-    PhotoCustomization photoCustomization,
-    VideoCustomization videoCustomization
+    GalleryCustomization? galleryCustomization,
+    PhotoCustomization? photoCustomization,
+    VideoCustomization? videoCustomization
   }) : this.galleryCustomization = galleryCustomization ?? GalleryCustomization(),
        this.photoCustomization = photoCustomization ?? PhotoCustomization(),
        this.videoCustomization = videoCustomization ?? VideoCustomization();

@@ -12,9 +12,9 @@ import 'package:provider/provider.dart';
 
 class InstaPicker {
 
-  static Future<InstaPickerResult> pick(
+  static Future<InstaPickerResult?> pick(
       BuildContext context,
-      {Options options}
+      {Options? options}
   ) async => await Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => Picker(options: options)));
 
@@ -22,7 +22,7 @@ class InstaPicker {
 
 class Picker extends StatelessWidget {
 
-  final Options options;
+  final Options? options;
 
   Picker({this.options});
 
@@ -43,9 +43,9 @@ class Picker extends StatelessWidget {
 
 class PickerView extends StatefulWidget {
 
-  final Options options;
+  final Options? options;
 
-  PickerView({Key key, this.options}) : super(key: key);
+  PickerView({Key? key, this.options}) : super(key: key);
 
   @override
   _PickerViewState createState() => _PickerViewState();
@@ -54,7 +54,7 @@ class PickerView extends StatefulWidget {
 
 class _PickerViewState extends State<PickerView> with SingleTickerProviderStateMixin {
 
-  PickerProvider _pickerProvider;
+  late PickerProvider _pickerProvider;
   List<Widget> _pages = [];
   List<Widget> _tabs = [];
 
@@ -62,19 +62,19 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
   void initState() {
     super.initState();
 
-    if (widget.options.showGalleryTab){
+    if (widget.options!.showGalleryTab){
       _pages.add(Gallery(galleryViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.translations.galleryTabTitle));
+      _tabs.add(Tab(text: widget.options!.translations.galleryTabTitle));
     }
 
-    if (widget.options.showPhotoTab){
+    if (widget.options!.showPhotoTab){
       _pages.add(Photo(photoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.translations.photoTabTitle));
+      _tabs.add(Tab(text: widget.options!.translations.photoTabTitle));
     }
 
-    if (widget.options.showVideoTab){
+    if (widget.options!.showVideoTab){
       _pages.add(Video(videoViewOptions: widget.options));
-      _tabs.add(Tab(text: widget.options.translations.videoTabTitle));
+      _tabs.add(Tab(text: widget.options!.translations.videoTabTitle));
     }
 
     _pickerProvider =  Provider.of<PickerProvider>(context, listen: false);
@@ -84,8 +84,8 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
 
   @override
   void dispose() {
-    _pickerProvider.pageController.dispose();
-    _pickerProvider.tabController.dispose();
+    _pickerProvider.pageController!.dispose();
+    _pickerProvider.tabController!.dispose();
     super.dispose();
   }
 
@@ -108,9 +108,9 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                  tabs: _tabs,
                  isScrollable: false,
                  indicatorWeight: 1.5,
-                 labelColor: widget.options.customizationOptions.tabBarTextColor,
-                 indicatorColor: widget.options.customizationOptions.tabBarIndicatorColor,
-                 unselectedLabelColor: widget.options.customizationOptions.tabBarTextColor,
+                 labelColor: widget.options!.customizationOptions.tabBarTextColor,
+                 indicatorColor: widget.options!.customizationOptions.tabBarIndicatorColor,
+                 unselectedLabelColor: widget.options!.customizationOptions.tabBarTextColor,
                  onTap: (index){
                    provider.onPageChange(context, index);
                    if(!provider.pageIsChanging) provider.pageIsChanging = true;

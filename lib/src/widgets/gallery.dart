@@ -14,11 +14,11 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-Options options;
+Options? options;
 
 class Gallery extends StatelessWidget {
 
-  Gallery({@required Options galleryViewOptions}){ options = galleryViewOptions; }
+  Gallery({required Options? galleryViewOptions}){ options = galleryViewOptions; }
 
   @override
   Widget build(BuildContext context) => GalleryView();
@@ -31,7 +31,7 @@ class GalleryView extends StatefulWidget {
 }
 
 class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClientMixin{
-  GalleryProvider galleryProvider;
+  late GalleryProvider galleryProvider;
 
   @override
   bool get wantKeepAlive => true;
@@ -43,7 +43,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
     galleryProvider =  Provider.of<GalleryProvider>(context, listen: false);
     galleryProvider.getFilesPath();
 
-    galleryProvider.translations = options.translations;
+    galleryProvider.translations = options!.translations;
   }
 
   @override
@@ -55,7 +55,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
   Widget build(BuildContext context) {
     super.build(context);
     return Scaffold(
-      backgroundColor: options.customizationOptions.bgColor,
+      backgroundColor: options!.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
         title: Consumer<GalleryProvider>(
@@ -63,8 +63,8 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
 
               return provider.folders != null ? DropdownButtonHideUnderline(
                   child: DropdownButton<FolderModel>(
-                    items: provider.getItems(),
-                    onChanged: (FolderModel folder) => provider.onFolderSelected(folder),
+                    items: provider.getItems() as List<DropdownMenuItem<FolderModel>>?,
+                    onChanged: (FolderModel? folder) => provider.onFolderSelected(folder!),
                     value: provider.selectedFolder,
                   )
               ) : Container();
@@ -74,7 +74,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
         leading: GestureDetector(
           child: Icon(
             Icons.clear,
-            color: options.customizationOptions.iconsColor,
+            color: options!.customizationOptions.iconsColor,
           ),
           onTap: (){
             Navigator.pop(context, null);
@@ -86,7 +86,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color: options.customizationOptions.iconsColor,
+                color: options!.customizationOptions.iconsColor,
               ),
             ),
             onTap: (){
@@ -94,7 +94,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
             },
           )
         ],
-        backgroundColor: options.customizationOptions.appBarColor,
+        backgroundColor: options!.customizationOptions.appBarColor,
       ),
       body: SafeArea(
           child: Column(
@@ -108,15 +108,15 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                         Container(
                           height: MediaQuery.of(context).size.height * 0.35,
                           width: MediaQuery.of(context).size.width,
-                          color: options.customizationOptions.bgColor,
+                          color: options!.customizationOptions.bgColor,
                           child: Stack(
                             children: [
-                              provider.selectedFile.type == AssetType.image
+                              provider.selectedFile!.type == AssetType.image
                                   ? GalleryImagePreview(provider)
-                                  : GalleryVideoPreview(provider, Key(path.basename(provider.selectedFile.filePath))),
-                              options.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
+                                  : GalleryVideoPreview(provider, Key(path.basename(provider.selectedFile!.filePath!))),
+                              options!.customizationOptions.galleryCustomization.maxSelectable > 1 ? Positioned(
                                 right: 20,
-                                bottom: provider.selectedFile.type == AssetType.video ? 50 : 5,
+                                bottom: provider.selectedFile!.type == AssetType.video ? 50 : 5,
                                 child: GestureDetector(
                                   child: Container(
                                     width: 36,
@@ -148,16 +148,16 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
               Consumer<GalleryProvider>(
                   builder: (ctx, provider, child){
 
-                    return provider.selectedFolder != null && provider.selectedFolder.files.length > 0
+                    return provider.selectedFolder != null && provider.selectedFolder!.files!.length > 0
                       ? Container(
-                            color: options.customizationOptions.bgColor,
+                            color: options!.customizationOptions.bgColor,
                             height: MediaQuery.of(context).size.height * 0.42,
                             child: GridView.builder(
                                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                                     crossAxisCount: 4, crossAxisSpacing: 4, mainAxisSpacing: 4
                                 ),
                                 itemBuilder: (_, i) {
-                                  var file = provider.selectedFolder.files[i];
+                                  var file = provider.selectedFolder!.files![i];
 
                                   return GalleryItem(
                                     file: file,
@@ -165,7 +165,7 @@ class _GalleryViewState extends State<GalleryView> with AutomaticKeepAliveClient
                                   );
 
                                 },
-                                itemCount: provider.selectedFolder.files.length
+                                itemCount: provider.selectedFolder!.files!.length
                         ),
                       ) : Container();
 
@@ -186,8 +186,8 @@ class GalleryImagePreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PhotoView(
-      imageProvider: FileImage(File(provider.selectedFile.filePath)),
-      backgroundDecoration: BoxDecoration(color: options.customizationOptions.bgColor),
+      imageProvider: FileImage(File(provider.selectedFile!.filePath!)),
+      backgroundDecoration: BoxDecoration(color: options!.customizationOptions.bgColor),
     );
   }
 }
@@ -204,15 +204,15 @@ class GalleryVideoPreview extends StatefulWidget {
 
 class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
 
-  Future<bool> _init;
-  ChewieController _chewieController;
-  VideoPlayerController _videoPlayerController;
+  Future<bool>? _init;
+  late ChewieController _chewieController;
+  late VideoPlayerController _videoPlayerController;
 
   @override
   void initState() {
     super.initState();
 
-    _videoPlayerController = VideoPlayerController.file(File(widget.provider.selectedFile.filePath));
+    _videoPlayerController = VideoPlayerController.file(File(widget.provider.selectedFile!.filePath!));
 
     _init = initVideoPlayer();
   }
@@ -247,7 +247,7 @@ class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
 
           if (!snp.hasData) return Center(
               child: CircularProgressIndicator(
-                  backgroundColor: options.customizationOptions.accentColor
+                  backgroundColor: options!.customizationOptions.accentColor
               )
           );
 
@@ -270,10 +270,10 @@ class _GalleryVideoPreviewState extends State<GalleryVideoPreview> {
 }
 
 class GalleryItem extends StatefulWidget {
-  final FileModel file;
-  final GalleryProvider provider;
+  final FileModel? file;
+  final GalleryProvider? provider;
 
-  GalleryItem({Key key, this.file, this.provider}) : super(key: key);
+  GalleryItem({Key? key, this.file, this.provider}) : super(key: key);
 
   @override
   _GalleryItemState createState() => _GalleryItemState();
@@ -302,27 +302,27 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
       fit: StackFit.expand,
       children: [
         GestureDetector(
-          child: File(widget.file.thumbPath) != null
+          child: File(widget.file!.thumbPath!) != null
           ? Image.file(
-            File(widget.file.thumbPath),
+            File(widget.file!.thumbPath!),
             fit: BoxFit.cover,
           )
           : Container(color: Colors.grey),
           onTap: () {
-            widget.provider.selectedFile = widget.file;
-            if (widget.provider.multiSelect) widget.provider.toggleCheckState(widget.file);
+            widget.provider!.selectedFile = widget.file;
+            if (widget.provider!.multiSelect) widget.provider!.toggleCheckState(widget.file);
           },
           onLongPress: (){
 
-            if (options.customizationOptions.galleryCustomization.maxSelectable == 1) return;
+            if (options!.customizationOptions.galleryCustomization.maxSelectable == 1) return;
 
-            widget.provider.multiSelect = !widget.provider.multiSelect;
-            widget.provider.toggleCheckState(widget.file);
-            widget.provider.selectedFile = widget.file;
+            widget.provider!.multiSelect = !widget.provider!.multiSelect;
+            widget.provider!.toggleCheckState(widget.file);
+            widget.provider!.selectedFile = widget.file;
 
           },
         ),
-        widget.provider.multiSelect ? Positioned(
+        widget.provider!.multiSelect ? Positioned(
             top: 5,
             right: 5,
             child: GestureDetector(
@@ -331,12 +331,12 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
                 height: 24,
                 padding: EdgeInsets.only(top: 2),
                 decoration: new BoxDecoration(
-                    color: widget.provider.getCheckState(widget.file) ? options.customizationOptions.accentColor : Colors.white70,
+                    color: widget.provider!.getCheckState(widget.file) ? options!.customizationOptions.accentColor : Colors.white70,
                     shape: BoxShape.circle,
-                    border: Border.all(width: 1.5, color: options.customizationOptions.bgColor)
+                    border: Border.all(width: 1.5, color: options!.customizationOptions.bgColor)
                 ),
-                child: widget.provider.getCheckState(widget.file)
-                    ? Text(widget.provider.getCheckNumber(widget.file).toString(),
+                child: widget.provider!.getCheckState(widget.file)
+                    ? Text(widget.provider!.getCheckNumber(widget.file).toString(),
                     style: TextStyle(
                         color: Colors.white
                     ),
@@ -345,16 +345,16 @@ class _GalleryItemState extends State<GalleryItem> with AutomaticKeepAliveClient
               ),
               onTap: (){
 
-                widget.provider.toggleCheckState(widget.file);
-                widget.provider.selectedFile = widget.file;
+                widget.provider!.toggleCheckState(widget.file);
+                widget.provider!.selectedFile = widget.file;
 
               },
             )
         ) : Container(),
-        widget.file.duration != null && widget.file.type == AssetType.video ? Positioned(
+        widget.file!.duration != null && widget.file!.type == AssetType.video ? Positioned(
             right: 5,
             bottom: 5,
-            child: Text(Utils.printDuration(widget.file.duration), style: TextStyle(color: Colors.white),)
+            child: Text(Utils.printDuration(widget.file!.duration!), style: TextStyle(color: Colors.white),)
         ) : Container()
       ],
     ) : Container();

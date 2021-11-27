@@ -9,8 +9,8 @@ class PickerProvider extends ChangeNotifier{
   static const PHOTO_PAGE_INDEX = 1;
   static const VIDEO_PAGE_INDEX = 2;
 
-  PageController pageController;
-  TabController tabController;
+  PageController? pageController;
+  TabController? tabController;
 
   bool pageIsChanging = false;
 
@@ -18,9 +18,9 @@ class PickerProvider extends ChangeNotifier{
 
     if (tabController == null || pageController == null || pageIsChanging) return;
 
-    await pageController.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
+    await pageController!.animateToPage(index, duration: Duration(milliseconds: 500), curve: Curves.ease);
 
-    tabController.animateTo(index);
+    tabController!.animateTo(index);
 
     pageIsChanging = false;
 

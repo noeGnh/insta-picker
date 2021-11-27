@@ -11,10 +11,10 @@ class PhotoProvider extends ChangeNotifier{
 
   final Logger logger = Logger();
 
-  CameraController controller;
-  int selectedCameraIdx;
-  String imagePath;
-  List cameras;
+  CameraController? controller;
+  late int selectedCameraIdx;
+  String? imagePath;
+  List? cameras;
 
   FlashMode flashMode = FlashMode.off;
 
@@ -27,7 +27,7 @@ class PhotoProvider extends ChangeNotifier{
       default: flashMode = FlashMode.off;
     }
 
-    await controller.setFlashMode(flashMode);
+    await controller!.setFlashMode(flashMode);
 
     notifyListeners();
   }
@@ -37,13 +37,13 @@ class PhotoProvider extends ChangeNotifier{
     availableCameras().then((availableCameras) {
 
       cameras = availableCameras;
-      if (cameras.length > 0) {
+      if (cameras!.length > 0) {
 
         selectedCameraIdx = 0;
 
         notifyListeners();
 
-        _initCameraController(cameras[selectedCameraIdx], mounted).then((void v) {});
+        _initCameraController(cameras![selectedCameraIdx], mounted).then((void v) {});
 
       }else{
         logger.w("No camera available");
@@ -57,24 +57,24 @@ class PhotoProvider extends ChangeNotifier{
 
   Future _initCameraController(CameraDescription cameraDescription, bool mounted) async {
     if (controller != null) {
-      await controller.dispose();
+      await controller!.dispose();
     }
 
     controller = CameraController(cameraDescription, ResolutionPreset.medium);
 
-    controller.addListener(() {
+    controller!.addListener(() {
 
       if (mounted) {
         notifyListeners();
       }
 
-      if (controller.value.hasError) {
-        logger.e('Camera error ${controller.value.errorDescription}');
+      if (controller!.value.hasError) {
+        logger.e('Camera error ${controller!.value.errorDescription}');
       }
     });
 
     try {
-      await controller.initialize();
+      await controller!.initialize();
     } on CameraException catch (e) {
       logger.e(e);
     }
@@ -86,13 +86,13 @@ class PhotoProvider extends ChangeNotifier{
 
   void refreshCamera(bool mounted) {
     Future.delayed(Duration(milliseconds: 1000), () async {
-      _initCameraController(cameras[0], mounted);
+      _initCameraController(cameras![0], mounted);
     });
   }
 
   void onSwitchCamera(bool mounted) {
-    selectedCameraIdx = selectedCameraIdx < cameras.length - 1 ? selectedCameraIdx + 1 : 0;
-    CameraDescription selectedCamera = cameras[selectedCameraIdx];
+    selectedCameraIdx = selectedCameraIdx < cameras!.length - 1 ? selectedCameraIdx + 1 : 0;
+    CameraDescription selectedCamera = cameras![selectedCameraIdx];
     _initCameraController(selectedCamera, mounted);
   }
 
@@ -100,18 +100,18 @@ class PhotoProvider extends ChangeNotifier{
 
     try {
 
-      String path;
+      String? path;
 
-      await controller.takePicture().then((XFile file) {
+      await controller!.takePicture().then((XFile file) {
         path = file.path;
       });
 
-      InstaPickerResult result = await Navigator.of(context).push(
+      InstaPickerResult? result = await Navigator.of(context).push(
           MaterialPageRoute(builder: (ctx) => ImagePreview(
               files: [
                 FileModel(
                     filePath: path,
-                    title: basename(path)
+                    title: basename(path!)
                 )
               ],
               imagePreviewOptions: options,

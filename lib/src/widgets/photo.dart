@@ -5,11 +5,11 @@ import 'package:insta_picker/src/providers/photo_provider.dart';
 import 'package:provider/provider.dart';
 
 
-Options options;
+Options? options;
 
 class Photo extends StatelessWidget {
 
-  Photo({@required Options photoViewOptions}){ options = photoViewOptions; }
+  Photo({required Options? photoViewOptions}){ options = photoViewOptions; }
 
   @override
   Widget build(BuildContext context) => PhotoView();
@@ -22,7 +22,7 @@ class PhotoView extends StatefulWidget {
 }
 
 class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixin{
-  PhotoProvider photoProvider;
+  late PhotoProvider photoProvider;
 
   @override
   bool get wantKeepAlive => true;
@@ -37,7 +37,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
 
   @override
   void dispose() {
-    photoProvider.controller.dispose();
+    photoProvider.controller!.dispose();
     super.dispose();
   }
 
@@ -46,7 +46,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
     super.build(context);
 
     return Container(
-      color: options.customizationOptions.bgColor,
+      color: options!.customizationOptions.bgColor,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -80,15 +80,15 @@ class CameraPreviewWidget extends StatelessWidget {
 
     PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
 
-    if (photoProvider.controller == null || !photoProvider.controller.value.isInitialized) {
+    if (photoProvider.controller == null || !photoProvider.controller!.value.isInitialized) {
       return Stack(
         children: [
           Positioned(
               child: Container(
                   width: size.width,
                   child: LinearProgressIndicator(
-                      backgroundColor: options.customizationOptions.bgColor,
-                      valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor)
+                      backgroundColor: options!.customizationOptions.bgColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor)
                   )
               )
           )
@@ -97,8 +97,8 @@ class CameraPreviewWidget extends StatelessWidget {
     }
 
     return AspectRatio(
-      aspectRatio: photoProvider.controller.value.aspectRatio,
-      child: CameraPreview(photoProvider.controller),
+      aspectRatio: photoProvider.controller!.value.aspectRatio,
+      child: CameraPreview(photoProvider.controller!),
     );
 
   }
@@ -120,8 +120,8 @@ class CaptureControlRowWidget extends StatelessWidget {
           children: [
             FloatingActionButton(
                 heroTag: null,
-                child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
-                backgroundColor: options.customizationOptions.iconsColor,
+                child: Icon(Icons.camera, color: options!.customizationOptions.bgColor,),
+                backgroundColor: options!.customizationOptions.iconsColor,
                 onPressed: () {
                   photoProvider.onCapturePressed(context, options);
                 })
@@ -158,9 +158,9 @@ class CameraTogglesRowWidget extends StatelessWidget {
 
     PhotoProvider photoProvider =  Provider.of<PhotoProvider>(context, listen: true);
 
-    if (photoProvider.cameras == null || photoProvider.cameras.isEmpty) return Spacer();
+    if (photoProvider.cameras == null || photoProvider.cameras!.isEmpty) return Spacer();
 
-    CameraDescription selectedCamera = photoProvider.cameras[photoProvider.selectedCameraIdx];
+    CameraDescription selectedCamera = photoProvider.cameras![photoProvider.selectedCameraIdx];
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
@@ -169,7 +169,7 @@ class CameraTogglesRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(left: 21),
-              child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
+              child: Icon(_getCameraLensIcon(lensDirection), color: options!.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               photoProvider.onSwitchCamera(mounted);
@@ -203,10 +203,10 @@ class FlashToggleRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(right: 21),
-              child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
+              child: Icon(iconData, color: options!.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
-              if (photoProvider.controller != null && photoProvider.controller.value.isInitialized){
+              if (photoProvider.controller != null && photoProvider.controller!.value.isInitialized){
                 photoProvider.onFlashButtonPressed();
               }
             },

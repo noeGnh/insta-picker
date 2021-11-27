@@ -5,11 +5,11 @@ import 'package:insta_picker/src/providers/video_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:super_tooltip/super_tooltip.dart';
 
-Options options;
+Options? options;
 
 class Video extends StatelessWidget {
 
-  Video({@required Options videoViewOptions}){ options = videoViewOptions; }
+  Video({required Options? videoViewOptions}){ options = videoViewOptions; }
 
   @override
   Widget build(BuildContext context) => VideoView();
@@ -22,7 +22,7 @@ class VideoView extends StatefulWidget {
 }
 
 class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixin{
-  VideoProvider provider;
+  late VideoProvider provider;
 
   @override
   bool get wantKeepAlive => true;
@@ -34,13 +34,13 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
     provider =  Provider.of<VideoProvider>(context, listen: false);
     // provider.getAvailableCameras(mounted);
 
-    provider.translations = options.translations;
-    provider.durationLimit = options.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
+    provider.translations = options!.translations;
+    provider.durationLimit = options!.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds;
   }
 
   @override
   void dispose() {
-    provider.controller.dispose();
+    provider.controller!.dispose();
     provider.cancelTimer();
     super.dispose();
   }
@@ -50,7 +50,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
     super.build(context);
 
     return Container(
-      color: options.customizationOptions.bgColor,
+      color: options!.customizationOptions.bgColor,
       child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -64,7 +64,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
 
                 return LinearProgressIndicator(
                   value: provider.getIndicatorProgress(),
-                  valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor),
+                  valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor),
                   backgroundColor: Colors.white,
                 );
 
@@ -106,15 +106,15 @@ class CameraPreviewWidget extends StatelessWidget {
 
     VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
 
-    if (videoProvider.controller == null || !videoProvider.controller.value.isInitialized) {
+    if (videoProvider.controller == null || !videoProvider.controller!.value.isInitialized) {
       return Stack(
         children: [
           Positioned(
               child: Container(
                   width: size.width,
                   child: LinearProgressIndicator(
-                      backgroundColor: options.customizationOptions.bgColor,
-                      valueColor: AlwaysStoppedAnimation<Color>(options.customizationOptions.accentColor)
+                      backgroundColor: options!.customizationOptions.bgColor,
+                      valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor)
                   )
               )
           )
@@ -123,8 +123,8 @@ class CameraPreviewWidget extends StatelessWidget {
     }
 
     return AspectRatio(
-      aspectRatio: videoProvider.controller.value.aspectRatio,
-      child: CameraPreview(videoProvider.controller),
+      aspectRatio: videoProvider.controller!.value.aspectRatio,
+      child: CameraPreview(videoProvider.controller!),
     );
 
   }
@@ -176,9 +176,9 @@ class CameraTogglesRowWidget extends StatelessWidget {
 
     VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
 
-    if (videoProvider.cameras == null || videoProvider.cameras.isEmpty) return Spacer();
+    if (videoProvider.cameras == null || videoProvider.cameras!.isEmpty) return Spacer();
 
-    CameraDescription selectedCamera = videoProvider.cameras[videoProvider.selectedCameraIdx];
+    CameraDescription selectedCamera = videoProvider.cameras![videoProvider.selectedCameraIdx];
     CameraLensDirection lensDirection = selectedCamera.lensDirection;
 
     return Expanded(
@@ -187,7 +187,7 @@ class CameraTogglesRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(left: 21),
-              child: Icon(_getCameraLensIcon(lensDirection), color: options.customizationOptions.iconsColor, size: 32,),
+              child: Icon(_getCameraLensIcon(lensDirection), color: options!.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
               videoProvider.onSwitchCamera(mounted);
@@ -221,10 +221,10 @@ class FlashToggleRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(right: 21),
-              child: Icon(iconData, color: options.customizationOptions.iconsColor, size: 32,),
+              child: Icon(iconData, color: options!.customizationOptions.iconsColor, size: 32,),
             ),
             onTap: (){
-              if (videoProvider.controller != null && videoProvider.controller.value.isInitialized){
+              if (videoProvider.controller != null && videoProvider.controller!.value.isInitialized){
                 videoProvider.onFlashButtonPressed();
               }
             },
@@ -238,7 +238,7 @@ class FlashToggleRowWidget extends StatelessWidget {
 class VideoCaptureButton extends StatefulWidget {
   final VideoProvider videoProvider;
 
-  VideoCaptureButton(this.videoProvider, {Key key}) : super(key: key);
+  VideoCaptureButton(this.videoProvider, {Key? key}) : super(key: key);
 
   @override
   _VideoCaptureButtonState createState() => _VideoCaptureButtonState();
@@ -253,7 +253,7 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
     hasShadow: false,
     content: Material(
       child: Text(
-        options.translations.pressAndHoldToRecord,
+        options!.translations.pressAndHoldToRecord,
         softWrap: true,
       ),
     ),
@@ -266,8 +266,8 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
       onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
       child: FloatingActionButton(
         heroTag: null,
-        child: Icon(Icons.camera, color: options.customizationOptions.bgColor,),
-        backgroundColor: options.customizationOptions.iconsColor,
+        child: Icon(Icons.camera, color: options!.customizationOptions.bgColor,),
+        backgroundColor: options!.customizationOptions.iconsColor,
         onPressed: () => widget.videoProvider.manageTooltip(context, superTooltip),
       ),
     );
