@@ -6,7 +6,6 @@ import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:insta_picker/insta_picker.dart';
 import 'package:insta_picker/src/models/file_model.dart';
 import 'package:insta_picker/src/models/folder_model.dart';
-import 'package:insta_picker/src/models/result.dart';
 import 'package:insta_picker/src/utils/utils.dart';
 import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:insta_picker/src/widgets/preview/video_preview.dart';

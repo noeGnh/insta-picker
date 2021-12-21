@@ -34,10 +34,13 @@ abstract class Utils{
   }
 
   /// Récupère la taille formatée d'un fichier
-  static String getFileSize(File file, int decimals){
-    int bytes = file.lengthSync();
+  static String getFileSize(File? file, int decimals){
+    if (file != null) {
+      int bytes = file.lengthSync();
 
-    return bytes != null ? formatBytes(bytes, decimals) : "0 B";
+      return formatBytes(bytes, decimals);
+    }
+    return "0 B";
   }
 
   /// Formate une taille en octets

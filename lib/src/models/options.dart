@@ -61,7 +61,7 @@ class GalleryCustomization{
     this.gridBgColor = Colors.white,
     this.selectedFileContainerColor = Colors.white,
   }){
-    if (this.maxSelectable != null && this.maxSelectable <= 0) {
+    if (this.maxSelectable <= 0) {
       throw ArgumentError('The maximum gallery selectable items value must be greater than 0');
     }  
   }
