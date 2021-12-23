@@ -5,16 +5,28 @@ import 'package:provider/provider.dart';
 
 class PickerProvider extends ChangeNotifier{
 
-  static const GALLERY_PAGE_INDEX = 0;
-  static const PHOTO_PAGE_INDEX = 1;
-  static const VIDEO_PAGE_INDEX = 2;
-
   PageController? pageController;
   TabController? tabController;
 
   bool pageIsChanging = false;
 
-  void onPageChange(BuildContext context, int index) async {
+  void init(BuildContext context, Map<String, int> indexes){
+
+    if (indexes['PHOTO_PAGE_INDEX'] == 0){
+
+      PhotoProvider photoProvider = Provider.of<PhotoProvider>(context, listen: false);
+      photoProvider.getAvailableCameras(true);
+
+    } else if (indexes['VIDEO_PAGE_INDEX'] == 0){
+
+      VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: false);
+      videoProvider.getAvailableCameras(true);
+
+    }
+
+  }
+
+  void onPageChange(BuildContext context, int index, Map<String, int> indexes) async {
 
     if (tabController == null || pageController == null || pageIsChanging) return;
 
@@ -24,20 +36,16 @@ class PickerProvider extends ChangeNotifier{
 
     pageIsChanging = false;
 
-    PhotoProvider photoProvider = Provider.of<PhotoProvider>(context, listen: false);
-    VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: false);
+    if (index == indexes['PHOTO_PAGE_INDEX']){
 
-    switch(index){
-      case GALLERY_PAGE_INDEX:
-        break;
+      PhotoProvider photoProvider = Provider.of<PhotoProvider>(context, listen: false);
+      photoProvider.getAvailableCameras(true);
 
-      case PHOTO_PAGE_INDEX:
-        photoProvider.getAvailableCameras(true);
-        break;
+    } else if (index == indexes['VIDEO_PAGE_INDEX']){
 
-      case VIDEO_PAGE_INDEX:
-        videoProvider.getAvailableCameras(true);
-        break;
+      VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: false);
+      videoProvider.getAvailableCameras(true);
+
     }
 
   }

@@ -15,7 +15,8 @@ class Options{
     Translations? translations,
     CustomizationOptions? customizationOptions
   }) :  this.translations = translations ?? Translations(),
-        this.customizationOptions = customizationOptions ?? CustomizationOptions();
+        this.customizationOptions = customizationOptions ?? CustomizationOptions(),
+        assert(showGalleryTab || showPhotoTab || showVideoTab);
 
 }
 

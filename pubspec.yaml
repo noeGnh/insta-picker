@@ -1,6 +1,6 @@
 name: insta_picker
 description: Instagram Picker.
-version: 0.0.8+1
+version: 0.0.8+2
 homepage: https://github.com/mstrkn/InstaPicker.git
 publish_to: 'none'
 
@@ -28,7 +28,7 @@ dependencies:
   camera: ^0.9.4+5
   chewie: ^1.2.2
   logger: ^1.1.0
-  path: ^1.8.0
+  path: ^1.8.1
 
   photofilters:
     git:
@@ -41,5 +41,6 @@ dev_dependencies:
 
 dependency_overrides:
   provider: ^6.0.1
+  path: ^1.8.1
 
 flutter:

@@ -37,7 +37,7 @@ class _PhotoViewState extends State<PhotoView> with AutomaticKeepAliveClientMixi
 
   @override
   void dispose() {
-    photoProvider.controller!.dispose();
+    if (photoProvider.controller != null) photoProvider.controller!.dispose();
     super.dispose();
   }
 

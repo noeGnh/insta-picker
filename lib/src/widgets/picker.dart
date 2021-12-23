@@ -58,6 +58,12 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
   List<Widget> _pages = [];
   List<Widget> _tabs = [];
 
+  Map<String, int> _indexes = {
+    'GALLERY_PAGE_INDEX' : -1,
+    'PHOTO_PAGE_INDEX' : -1,
+    'VIDEO_PAGE_INDEX' : -1
+  };
+
   @override
   void initState() {
     super.initState();
@@ -65,21 +71,32 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
     if (widget.options!.showGalleryTab){
       _pages.add(Gallery(galleryViewOptions: widget.options));
       _tabs.add(Tab(text: widget.options!.translations.galleryTabTitle));
+
+      _indexes['GALLERY_PAGE_INDEX'] = 0;
     }
 
     if (widget.options!.showPhotoTab){
       _pages.add(Photo(photoViewOptions: widget.options));
       _tabs.add(Tab(text: widget.options!.translations.photoTabTitle));
+
+      _indexes['PHOTO_PAGE_INDEX'] = _indexes['GALLERY_PAGE_INDEX'] == -1 ? 0 : 1;
     }
 
     if (widget.options!.showVideoTab){
       _pages.add(Video(videoViewOptions: widget.options));
       _tabs.add(Tab(text: widget.options!.translations.videoTabTitle));
+
+      if (_indexes['GALLERY_PAGE_INDEX'] == -1 && _indexes['PHOTO_PAGE_INDEX'] == -1) _indexes['VIDEO_PAGE_INDEX'] = 0;
+      else if (_indexes['GALLERY_PAGE_INDEX'] != -1 && _indexes['PHOTO_PAGE_INDEX'] == -1) _indexes['VIDEO_PAGE_INDEX'] = 1;
+      else if (_indexes['GALLERY_PAGE_INDEX'] == -1 && _indexes['PHOTO_PAGE_INDEX'] != -1) _indexes['VIDEO_PAGE_INDEX'] = 1;
+      else _indexes['VIDEO_PAGE_INDEX'] = 2;
     }
 
     _pickerProvider =  Provider.of<PickerProvider>(context, listen: false);
     _pickerProvider.tabController = TabController(length: _pages.length, vsync: this);
     _pickerProvider.pageController = PageController();
+
+    _pickerProvider.init(context, _indexes);
   }
 
   @override
@@ -98,7 +115,7 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                controller: provider.pageController,
                children: _pages,
                onPageChanged: (index){
-                  provider.onPageChange(context, index);
+                  provider.onPageChange(context, index, _indexes);
                   if(!provider.pageIsChanging) provider.pageIsChanging = true;
                },
              ),
@@ -112,7 +129,7 @@ class _PickerViewState extends State<PickerView> with SingleTickerProviderStateM
                  indicatorColor: widget.options!.customizationOptions.tabBarIndicatorColor,
                  unselectedLabelColor: widget.options!.customizationOptions.tabBarTextColor,
                  onTap: (index){
-                   provider.onPageChange(context, index);
+                   provider.onPageChange(context, index, _indexes);
                    if(!provider.pageIsChanging) provider.pageIsChanging = true;
                  },
                ),
