@@ -80,8 +80,8 @@ class GalleryProvider extends ChangeNotifier{
 
     final String cacheDir = '${(await getTemporaryDirectory()).path}/galleryPicker';
 
-    var result = await PhotoManager.requestPermission();
-    if (result) {
+    var permission = await PhotoManager.requestPermissionExtend();
+    if (permission != PermissionState.authorized && permission != PermissionState.limited) {
 
       var paths = await PhotoManager.getAssetPathList(
           hasAll: false,
