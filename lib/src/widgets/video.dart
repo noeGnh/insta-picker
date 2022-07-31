@@ -2,18 +2,18 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_picker/src/models/options.dart';
 import 'package:insta_picker/src/providers/video_provider.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import 'package:provider/provider.dart';
-import 'package:super_tooltip/super_tooltip.dart';
 
 Options? options;
 
 class Video extends StatelessWidget {
-
-  Video({required Options? videoViewOptions}){ options = videoViewOptions; }
+  Video({required Options? videoViewOptions}) {
+    options = videoViewOptions;
+  }
 
   @override
   Widget build(BuildContext context) => VideoView();
-
 }
 
 class VideoView extends StatefulWidget {
@@ -21,7 +21,7 @@ class VideoView extends StatefulWidget {
   _VideoViewState createState() => _VideoViewState();
 }
 
-class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixin{
+class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixin {
   late VideoProvider provider;
 
   @override
@@ -31,7 +31,7 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
   void initState() {
     super.initState();
 
-    provider =  Provider.of<VideoProvider>(context, listen: false);
+    provider = Provider.of<VideoProvider>(context, listen: false);
     // provider.getAvailableCameras(mounted);
 
     provider.translations = options!.translations;
@@ -41,8 +41,8 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
   @override
   void dispose() {
     if (provider.controller != null) {
-        provider.controller!.dispose();
-        provider.cancelTimer();
+      provider.controller!.dispose();
+      provider.cancelTimer();
     }
     super.dispose();
   }
@@ -61,28 +61,20 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
               flex: 1,
               child: CameraPreviewWidget(),
             ),
-            Consumer<VideoProvider>(
-              builder: (ctx, provider, child){
-
-                return LinearProgressIndicator(
-                  value: provider.getIndicatorProgress(),
-                  valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor),
-                  backgroundColor: Colors.white,
-                );
-
-              }
-            ),
+            Consumer<VideoProvider>(builder: (ctx, provider, child) {
+              return LinearProgressIndicator(
+                value: provider.getIndicatorProgress(),
+                valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor),
+                backgroundColor: Colors.white,
+              );
+            }),
             SizedBox(height: 5.0),
-            Consumer<VideoProvider>(
-                builder: (ctx, provider, child){
-
-                  return Text(
-                    "00 : ${provider.showDuration()}",
-                    textAlign: TextAlign.center,
-                  );
-
-                }
-            ),
+            Consumer<VideoProvider>(builder: (ctx, provider, child) {
+              return Text(
+                "00 : ${provider.showDuration()}",
+                textAlign: TextAlign.center,
+              );
+            }),
             SizedBox(height: 15.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -103,10 +95,9 @@ class _VideoViewState extends State<VideoView> with AutomaticKeepAliveClientMixi
 class CameraPreviewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     final size = MediaQuery.of(context).size;
 
-    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+    VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: true);
 
     if (videoProvider.controller == null || !videoProvider.controller!.value.isInitialized) {
       return Stack(
@@ -114,12 +105,7 @@ class CameraPreviewWidget extends StatelessWidget {
           Positioned(
               child: Container(
                   width: size.width,
-                  child: LinearProgressIndicator(
-                      backgroundColor: options!.customizationOptions.bgColor,
-                      valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor)
-                  )
-              )
-          )
+                  child: LinearProgressIndicator(backgroundColor: options!.customizationOptions.bgColor, valueColor: AlwaysStoppedAnimation<Color>(options!.customizationOptions.accentColor))))
         ],
       );
     }
@@ -128,15 +114,13 @@ class CameraPreviewWidget extends StatelessWidget {
       aspectRatio: videoProvider.controller!.value.aspectRatio,
       child: CameraPreview(videoProvider.controller!),
     );
-
   }
 }
 
 class CaptureControlRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
-    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+    VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: true);
 
     return Expanded(
       child: Align(
@@ -144,18 +128,14 @@ class CaptureControlRowWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           mainAxisSize: MainAxisSize.max,
-          children: [
-            VideoCaptureButton(videoProvider)
-          ],
+          children: [VideoCaptureButton(videoProvider)],
         ),
       ),
     );
-
   }
 }
 
 class CameraTogglesRowWidget extends StatelessWidget {
-
   final bool mounted;
 
   CameraTogglesRowWidget(this.mounted);
@@ -175,8 +155,7 @@ class CameraTogglesRowWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+    VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: true);
 
     if (videoProvider.cameras == null || videoProvider.cameras!.isEmpty) return Spacer();
 
@@ -189,32 +168,38 @@ class CameraTogglesRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(left: 21),
-              child: Icon(_getCameraLensIcon(lensDirection), color: options!.customizationOptions.iconsColor, size: 32,),
+              child: Icon(
+                _getCameraLensIcon(lensDirection),
+                color: options!.customizationOptions.iconsColor,
+                size: 32,
+              ),
             ),
-            onTap: (){
+            onTap: () {
               videoProvider.onSwitchCamera(mounted);
             },
-          )
-      ),
+          )),
     );
-
   }
 }
 
 class FlashToggleRowWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
-    VideoProvider videoProvider =  Provider.of<VideoProvider>(context, listen: true);
+    VideoProvider videoProvider = Provider.of<VideoProvider>(context, listen: true);
 
     IconData iconData;
 
-    switch(videoProvider.flashMode){
-      case FlashMode.auto:  iconData = Icons.flash_auto; break;
+    switch (videoProvider.flashMode) {
+      case FlashMode.auto:
+        iconData = Icons.flash_auto;
+        break;
 
-      case FlashMode.torch: iconData = Icons.flash_on; break;
+      case FlashMode.torch:
+        iconData = Icons.flash_on;
+        break;
 
-      default:  iconData = Icons.flash_off;
+      default:
+        iconData = Icons.flash_off;
     }
 
     return Expanded(
@@ -223,17 +208,19 @@ class FlashToggleRowWidget extends StatelessWidget {
           child: GestureDetector(
             child: Padding(
               padding: EdgeInsets.only(right: 21),
-              child: Icon(iconData, color: options!.customizationOptions.iconsColor, size: 32,),
+              child: Icon(
+                iconData,
+                color: options!.customizationOptions.iconsColor,
+                size: 32,
+              ),
             ),
-            onTap: (){
-              if (videoProvider.controller != null && videoProvider.controller!.value.isInitialized){
+            onTap: () {
+              if (videoProvider.controller != null && videoProvider.controller!.value.isInitialized) {
                 videoProvider.onFlashButtonPressed();
               }
             },
-          )
-      ),
+          )),
     );
-
   }
 }
 
@@ -247,32 +234,37 @@ class VideoCaptureButton extends StatefulWidget {
 }
 
 class _VideoCaptureButtonState extends State<VideoCaptureButton> {
+  final tooltipController = JustTheController();
 
-  SuperTooltip superTooltip = SuperTooltip(
-    popupDirection: TooltipDirection.up,
-    borderRadius: 3.0,
-    borderWidth: 0.0,
-    hasShadow: false,
-    content: Material(
-      child: Text(
-        options!.translations.pressAndHoldToRecord,
-        softWrap: true,
-      ),
-    ),
-  );
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
       onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
-      child: FloatingActionButton(
-        heroTag: null,
-        child: Icon(Icons.camera, color: options!.customizationOptions.bgColor,),
-        backgroundColor: options!.customizationOptions.iconsColor,
-        onPressed: () => widget.videoProvider.manageTooltip(context, superTooltip),
+      child: JustTheTooltip(
+        preferredDirection: AxisDirection.up,
+        controller: tooltipController,
+        child: FloatingActionButton(
+          heroTag: null,
+          child: Icon(
+            Icons.camera,
+            color: options!.customizationOptions.bgColor,
+          ),
+          backgroundColor: options!.customizationOptions.iconsColor,
+          onPressed: () => widget.videoProvider.manageTooltip(tooltipController),
+        ),
+        content: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            options!.translations.pressAndHoldToRecord,
+          ),
+        ),
       ),
     );
   }
 }
-

@@ -246,7 +246,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.8+5"
+    version: "0.0.8+6"
   intl:
     dependency: transitive
     description:
@@ -261,6 +261,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.4"
+  just_the_tooltip:
+    dependency: transitive
+    description:
+      name: just_the_tooltip
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.12"
   logger:
     dependency: transitive
     description:
@@ -492,13 +499,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
-  super_tooltip:
-    dependency: transitive
-    description:
-      name: super_tooltip
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   term_glyph:
     dependency: transitive
     description:
