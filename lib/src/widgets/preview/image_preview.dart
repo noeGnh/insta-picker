@@ -9,22 +9,20 @@ import 'package:provider/provider.dart';
 Options? options;
 
 class ImagePreview extends StatelessWidget {
-
   final List<FileModel?>? files;
   final bool showAddButton;
 
-  ImagePreview({required Options? imagePreviewOptions, required this.showAddButton, this.files}){
+  ImagePreview({required Options? imagePreviewOptions, required this.showAddButton, this.files}) {
     options = imagePreviewOptions;
   }
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<ImagePreviewProvider>(
-        create: (_) => ImagePreviewProvider(),
-        child: ImagePreviewContent(files: this.files, showAddButton: this.showAddButton),
+      create: (_) => ImagePreviewProvider(),
+      child: ImagePreviewContent(files: this.files, showAddButton: this.showAddButton),
     );
   }
-
 }
 
 class ImagePreviewContent extends StatefulWidget {
@@ -40,7 +38,7 @@ class ImagePreviewContent extends StatefulWidget {
 class _ImagePreviewContentState extends State<ImagePreviewContent> {
   late ImagePreviewProvider _imagePreviewProvider;
 
-  Widget _getItemCard(int index){
+  Widget _getItemCard(int index) {
     return Card(
       child: Stack(
         children: [
@@ -60,10 +58,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                   children: [
                     GestureDetector(
                       child: Container(
-                        decoration: BoxDecoration(
-                            color: options!.customizationOptions.bgColor,
-                            shape: BoxShape.circle
-                        ),
+                        decoration: BoxDecoration(color: options!.customizationOptions.bgColor, shape: BoxShape.circle),
                         child: Icon(
                           Icons.photo_filter_sharp,
                           color: options!.customizationOptions.iconsColor,
@@ -72,17 +67,16 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                         alignment: Alignment.center,
                         width: 54,
                       ),
-                      onTap: (){
+                      onTap: () {
                         _imagePreviewProvider.addFilter(context, _imagePreviewProvider.files!.elementAt(index)!, options);
                       },
                     ),
-                    SizedBox(width: 30,),
+                    SizedBox(
+                      width: 30,
+                    ),
                     GestureDetector(
                       child: Container(
-                        decoration: BoxDecoration(
-                            color: options!.customizationOptions.bgColor,
-                            shape: BoxShape.circle
-                        ),
+                        decoration: BoxDecoration(color: options!.customizationOptions.bgColor, shape: BoxShape.circle),
                         child: Icon(
                           Icons.edit,
                           color: options!.customizationOptions.iconsColor,
@@ -91,14 +85,13 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
                         alignment: Alignment.center,
                         width: 54,
                       ),
-                      onTap: (){
+                      onTap: () {
                         _imagePreviewProvider.edit(_imagePreviewProvider.files!.elementAt(index)!, options!);
                       },
                     ),
                   ],
                 ),
-              )
-          )
+              ))
         ],
       ),
     );
@@ -108,7 +101,7 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
   void initState() {
     super.initState();
 
-    _imagePreviewProvider =  Provider.of<ImagePreviewProvider>(context, listen: false);
+    _imagePreviewProvider = Provider.of<ImagePreviewProvider>(context, listen: false);
     _imagePreviewProvider.files = widget.files;
 
     _imagePreviewProvider.translations = options!.translations;
@@ -120,13 +113,16 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
       backgroundColor: options!.customizationOptions.bgColor,
       appBar: AppBar(
         elevation: 0.0,
-        title: Text(options!.translations.preview, style: TextStyle(color: options!.customizationOptions.textColor),),
+        title: Text(
+          options!.translations.preview,
+          style: TextStyle(color: options!.customizationOptions.textColor),
+        ),
         leading: GestureDetector(
           child: Icon(
             Icons.arrow_back,
             color: options!.customizationOptions.iconsColor,
           ),
-          onTap: (){
+          onTap: () {
             Navigator.pop(context, null);
           },
         ),
@@ -136,10 +132,10 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Icon(
                 Icons.check,
-                color:options!.customizationOptions.iconsColor,
+                color: options!.customizationOptions.iconsColor,
               ),
             ),
-            onTap: (){
+            onTap: () {
               _imagePreviewProvider.submit(context);
             },
           )
@@ -147,51 +143,44 @@ class _ImagePreviewContentState extends State<ImagePreviewContent> {
         backgroundColor: options!.customizationOptions.appBarColor,
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 80),
-        alignment: Alignment.center,
-        child: Consumer<ImagePreviewProvider>(
-            builder: (ctx, provider, child){
+          padding: EdgeInsets.symmetric(vertical: 80),
+          alignment: Alignment.center,
+          child: Consumer<ImagePreviewProvider>(builder: (ctx, provider, child) {
+            int itemCount = widget.showAddButton! ? provider.files!.length + 1 : provider.files!.length;
 
-              int itemCount = widget.showAddButton! ? provider.files!.length + 1 : provider.files!.length;
-
-              return ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: itemCount,
-                  itemBuilder: (ctx, i) {
-
-                    if (i == provider.files!.length && widget.showAddButton!) {
-                      return Card(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 50),
-                            child: Center(
-                              child: GestureDetector(
-                                child: Icon(
-                                  Icons.add_circle,
-                                  color: options!.customizationOptions.iconsColor,
-                                  size: 128,
-                                ),
-                                onTap: (){
-                                  Navigator.pop(context, null);
-                                },
-                              ),
-                            ),
-                          )
-                      );
-                    }
-
-                    return itemCount <= 1 ? Container(
-                      color: options!.customizationOptions.bgColor,
-                      width: MediaQuery.of(context).size.width,
-                      alignment: Alignment.center,
-                      child: _getItemCard(i),
-                    ) : _getItemCard(i);
-
+            return ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: itemCount,
+                itemBuilder: (ctx, i) {
+                  if (i == provider.files!.length && widget.showAddButton!) {
+                    return Card(
+                        child: Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 50),
+                      child: Center(
+                        child: GestureDetector(
+                          child: Icon(
+                            Icons.add_circle,
+                            color: options!.customizationOptions.iconsColor,
+                            size: 128,
+                          ),
+                          onTap: () {
+                            Navigator.pop(context, null);
+                          },
+                        ),
+                      ),
+                    ));
                   }
-              );
 
-            }
-        )
-      ),
+                  return itemCount <= 1
+                      ? Container(
+                          color: options!.customizationOptions.bgColor,
+                          width: MediaQuery.of(context).size.width,
+                          alignment: Alignment.center,
+                          child: _getItemCard(i),
+                        )
+                      : _getItemCard(i);
+                });
+          })),
     );
   }
 }

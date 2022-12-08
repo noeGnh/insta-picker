@@ -6,8 +6,7 @@ import 'package:insta_picker/src/models/result.dart';
 import 'package:path/path.dart';
 import 'package:video_trimmer/video_trimmer.dart';
 
-class VideoPreviewProvider extends ChangeNotifier{
-
+class VideoPreviewProvider extends ChangeNotifier {
   final Trimmer _trimmer = Trimmer();
 
   double _startValue = 0.0;
@@ -26,47 +25,47 @@ class VideoPreviewProvider extends ChangeNotifier{
 
   bool get progressVisibility => this._progressVisibility;
 
-  set isPlaying(bool? v){ this._isPlaying = v; notifyListeners(); }
+  set isPlaying(bool? v) {
+    this._isPlaying = v;
+    notifyListeners();
+  }
 
-  set endValue(double v){ this._endValue = v; }
+  set endValue(double v) {
+    this._endValue = v;
+  }
 
-  set startValue(double v){ this._startValue = v; }
+  set startValue(double v) {
+    this._startValue = v;
+  }
 
-  set progressVisibility(bool v){ this._progressVisibility = v; notifyListeners(); }
+  set progressVisibility(bool v) {
+    this._progressVisibility = v;
+    notifyListeners();
+  }
 
   List<FileModel?>? files;
 
   loadVideoTrimmer() async => await _trimmer.loadVideo(videoFile: File(files![0]!.filePath!));
 
   submit(BuildContext context) async {
-
     this.progressVisibility = true;
 
     this._trimmer.saveTrimmedVideo(
-      startValue: _startValue,
-      endValue: _endValue,
-      onSave: (String? outputPath) {
+          startValue: _startValue,
+          endValue: _endValue,
+          onSave: (String? outputPath) {
+            this.progressVisibility = false;
 
-        this.progressVisibility = false;
+            List<PickedFile> pickedFiles = [];
 
-        List<PickedFile> pickedFiles = [];
+            if (files != null) {
+              files!.map((file) {
+                pickedFiles.add(PickedFile(path: outputPath, name: basename(outputPath!)));
+              }).toList();
 
-        if (files != null){
-          files!.map((file) {
-            pickedFiles.add(
-                PickedFile(
-                    path: outputPath,
-                    name: basename(outputPath!)
-                )
-            );
-          }).toList();
-
-          Navigator.pop(context, InstaPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));
-        }
-
-      },
-    );
-
+              Navigator.pop(context, InstaPickerResult(pickedFiles: pickedFiles, resultType: ResultType.VIDEO));
+            }
+          },
+        );
   }
-
 }

@@ -1,22 +1,15 @@
-class InstaPickerResult{
-
+class InstaPickerResult {
   List<PickedFile>? pickedFiles;
   ResultType? resultType;
 
   InstaPickerResult({this.pickedFiles, this.resultType});
-
 }
 
-class PickedFile{
-
+class PickedFile {
   String? path;
   String? name;
 
   PickedFile({this.path, this.name});
-
 }
 
-enum ResultType{
-  IMAGE,
-  VIDEO
-}
+enum ResultType { IMAGE, VIDEO }

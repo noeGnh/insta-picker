@@ -1,7 +1,6 @@
 import 'package:insta_picker/src/models/file_model.dart';
 
-class FolderModel{
-
+class FolderModel {
   List<FileModel>? files;
   String? name;
   String? id;
@@ -9,5 +8,4 @@ class FolderModel{
   int? count;
 
   FolderModel({this.files, this.name, this.id, this.type, this.count});
-
 }

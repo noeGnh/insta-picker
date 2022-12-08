@@ -2,8 +2,7 @@ import 'dart:ui';
 
 import 'package:photo_manager/photo_manager.dart';
 
-class FileModel{
-
+class FileModel {
   AssetType? type;
   Duration? duration;
   Size? size;
@@ -20,7 +19,20 @@ class FileModel{
   String? filePath;
   String? thumbPath;
 
-  FileModel({this.duration, this.type, this.size, this.width, this.height, this.createDt, this.modifiedDt,
-             this.latitude, this.longitude, this.ll, this.mediaUrl, this.title, this.relativePath, this.filePath, this.thumbPath});
-
+  FileModel(
+      {this.duration,
+      this.type,
+      this.size,
+      this.width,
+      this.height,
+      this.createDt,
+      this.modifiedDt,
+      this.latitude,
+      this.longitude,
+      this.ll,
+      this.mediaUrl,
+      this.title,
+      this.relativePath,
+      this.filePath,
+      this.thumbPath});
 }

@@ -12,14 +12,13 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: "Example",
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
+      title: "Example",
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
           appBar: AppBar(
             title: Text("Example"),
           ),
-          body: Content()
-        ),
+          body: Content()),
     );
   }
 }
@@ -30,7 +29,6 @@ class Content extends StatefulWidget {
 }
 
 class _ContentState extends State<Content> {
-
   String? mediaPath;
   ResultType? mediaType;
 
@@ -45,18 +43,14 @@ class _ContentState extends State<Content> {
           Container(
             width: 300,
             height: 300,
-            child: mediaPath != null && mediaType != null
-                 ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!))
-                 : Container(),
+            child: mediaPath != null && mediaType != null ? (mediaType == ResultType.IMAGE ? Image.file(File(mediaPath!)) : VideoPlayerWidget(mediaPath!)) : Container(),
           ),
           ElevatedButton(
             onPressed: () async {
               InstaPickerResult? result = await InstaPicker.pick(context, options: Options());
-              if (result != null){
-
+              if (result != null) {
                 mediaPath = result.pickedFiles![0].path;
                 mediaType = result.resultType;
-
               }
               setState(() {});
             },
@@ -114,5 +108,3 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     );
   }
 }
-
-

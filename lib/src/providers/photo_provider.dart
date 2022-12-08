@@ -7,8 +7,7 @@ import 'package:insta_picker/src/widgets/preview/image_preview.dart';
 import 'package:logger/logger.dart';
 import 'package:path/path.dart';
 
-class PhotoProvider extends ChangeNotifier{
-
+class PhotoProvider extends ChangeNotifier {
   final Logger logger = Logger();
 
   CameraController? controller;
@@ -19,12 +18,17 @@ class PhotoProvider extends ChangeNotifier{
   FlashMode flashMode = FlashMode.off;
 
   Future<void> onFlashButtonPressed() async {
-    switch (flashMode){
-      case FlashMode.torch: flashMode = FlashMode.auto; break;
+    switch (flashMode) {
+      case FlashMode.torch:
+        flashMode = FlashMode.auto;
+        break;
 
-      case FlashMode.off: flashMode = FlashMode.torch; break;
+      case FlashMode.off:
+        flashMode = FlashMode.torch;
+        break;
 
-      default: flashMode = FlashMode.off;
+      default:
+        flashMode = FlashMode.off;
     }
 
     await controller!.setFlashMode(flashMode);
@@ -32,27 +36,21 @@ class PhotoProvider extends ChangeNotifier{
     notifyListeners();
   }
 
-  void getAvailableCameras(bool mounted){
-
+  void getAvailableCameras(bool mounted) {
     availableCameras().then((availableCameras) {
-
       cameras = availableCameras;
       if (cameras!.length > 0) {
-
         selectedCameraIdx = 0;
 
         notifyListeners();
 
         _initCameraController(cameras![selectedCameraIdx], mounted).then((void v) {});
-
-      }else{
+      } else {
         logger.w("No camera available");
       }
-
     }).catchError((e) {
       logger.e('Error: ${e.code}\nError Message: $e.message');
     });
-
   }
 
   Future _initCameraController(CameraDescription cameraDescription, bool mounted) async {
@@ -63,7 +61,6 @@ class PhotoProvider extends ChangeNotifier{
     controller = CameraController(cameraDescription, ResolutionPreset.high);
 
     controller!.addListener(() {
-
       if (mounted) {
         notifyListeners();
       }
@@ -97,35 +94,23 @@ class PhotoProvider extends ChangeNotifier{
   }
 
   void onCapturePressed(context, options) async {
-
     try {
-
       String? path;
 
       await controller!.takePicture().then((XFile file) {
         path = file.path;
       });
 
-      InstaPickerResult? result = await Navigator.of(context).push(
-          MaterialPageRoute(builder: (ctx) => ImagePreview(
-              files: [
-                FileModel(
-                    filePath: path,
-                    title: basename(path!)
-                )
-              ],
-              imagePreviewOptions: options,
-              showAddButton: false,
-            )
-          )
-      );
+      InstaPickerResult? result = await Navigator.of(context).push(MaterialPageRoute(
+          builder: (ctx) => ImagePreview(
+                files: [FileModel(filePath: path, title: basename(path!))],
+                imagePreviewOptions: options,
+                showAddButton: false,
+              )));
 
       if (result != null) Navigator.pop(context, result);
-
     } catch (e) {
       logger.e(e);
     }
-
   }
-
 }
