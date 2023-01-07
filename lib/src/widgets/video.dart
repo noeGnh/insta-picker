@@ -243,12 +243,12 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
-      onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
-      child: JustTheTooltip(
-        preferredDirection: AxisDirection.up,
-        controller: tooltipController,
+    return JustTheTooltip(
+      preferredDirection: AxisDirection.up,
+      controller: tooltipController,
+      child: GestureDetector(
+        onLongPressStart: (d) => widget.videoProvider.startVideoRecording(context, mounted),
+        onLongPressEnd: (d) => widget.videoProvider.stopVideoRecording(context, mounted),
         child: FloatingActionButton(
           heroTag: null,
           child: Icon(
@@ -258,11 +258,11 @@ class _VideoCaptureButtonState extends State<VideoCaptureButton> {
           backgroundColor: options!.customizationOptions.iconsColor,
           onPressed: () => widget.videoProvider.manageTooltip(tooltipController),
         ),
-        content: Padding(
-          padding: EdgeInsets.all(8.0),
-          child: Text(
-            options!.translations.pressAndHoldToRecord,
-          ),
+      ),
+      content: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          options!.translations.pressAndHoldToRecord,
         ),
       ),
     );
