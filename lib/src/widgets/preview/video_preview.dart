@@ -109,15 +109,17 @@ class _TrimmerViewState extends State<TrimmerView> {
               child: VideoViewer(trimmer: provider.trimmer),
             ),
             Center(
-              child: TrimEditor(
+              child: TrimViewer(
                 viewerHeight: 50.0,
                 trimmer: provider.trimmer,
                 viewerWidth: MediaQuery.of(context).size.width,
                 maxVideoLength: Duration(seconds: options!.customizationOptions.videoCustomization.maximumRecordingDuration.inSeconds),
                 durationTextStyle: TextStyle(color: options!.customizationOptions.textColor),
-                scrubberPaintColor: options!.customizationOptions.accentColor,
-                borderPaintColor: options!.customizationOptions.accentColor,
-                circlePaintColor: options!.customizationOptions.accentColor,
+                editorProperties: TrimEditorProperties(
+                  scrubberPaintColor: options!.customizationOptions.accentColor,
+                  borderPaintColor: options!.customizationOptions.accentColor,
+                  circlePaintColor: options!.customizationOptions.accentColor,
+                ),
                 onChangeStart: (value) {
                   provider.startValue = value;
                 },

@@ -15,15 +15,14 @@ dependencies:
   insta_picker:
     path: ../
 
-  cupertino_icons: ^1.0.5
-  video_player: ^2.7.0
+  cupertino_icons: ^1.0.6
+  video_player: ^2.8.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 dependency_overrides:
-  path: ^1.8.3
   video_thumbnail:
     git:
       url: https://github.com/julek-kal/video_thumbnail
