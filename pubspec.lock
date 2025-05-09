@@ -549,10 +549,10 @@ packages:
     description:
       path: "."
       ref: develop
-      resolved-ref: "7718cbb7279524d201ed3e56cbbd9e247c2d2dd1"
-      url: "https://github.com/noeGnh/photofilters.git"
+      resolved-ref: f48c58ae91292d7a871e197ae34e1bb493ef6173
+      url: "git@github.com:noeGnh/photofilters.git"
     source: git
-    version: "3.0.1+1"
+    version: "3.0.3"
   platform:
     dependency: "direct main"
     description:

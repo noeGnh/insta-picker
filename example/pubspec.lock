@@ -565,7 +565,7 @@ packages:
       path: "."
       ref: develop
       resolved-ref: f48c58ae91292d7a871e197ae34e1bb493ef6173
-      url: "https://github.com/noeGnh/photofilters.git"
+      url: "git@github.com:noeGnh/photofilters.git"
     source: git
     version: "3.0.3"
   platform:

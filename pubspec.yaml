@@ -32,7 +32,7 @@ dependencies:
 
   photofilters:
     git:
-      url: https://github.com/noeGnh/photofilters.git
+      url: git@github.com:noeGnh/photofilters.git
       ref: develop
 
 dev_dependencies:
