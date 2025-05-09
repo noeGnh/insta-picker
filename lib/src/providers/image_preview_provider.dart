@@ -66,21 +66,41 @@ class ImagePreviewProvider extends ChangeNotifier {
   edit(FileModel file, Options options) async {
     CroppedFile? editResult = await ImageCropper().cropImage(
       sourcePath: file.filePath!,
-      cropStyle: CropStyle.rectangle,
       compressFormat: ImageCompressFormat.png,
-      aspectRatioPresets: [CropAspectRatioPreset.original, CropAspectRatioPreset.square, CropAspectRatioPreset.ratio3x2, CropAspectRatioPreset.ratio4x3, CropAspectRatioPreset.ratio16x9],
       uiSettings: [
         AndroidUiSettings(
-            toolbarTitle: '',
-            toolbarColor: options.customizationOptions.appBarColor,
-            statusBarColor: options.customizationOptions.appBarColor,
-            backgroundColor: options.customizationOptions.appBarColor,
-            toolbarWidgetColor: options.customizationOptions.iconsColor,
-            activeControlsWidgetColor: options.customizationOptions.iconsColor,
-            initAspectRatio: CropAspectRatioPreset.original,
-            lockAspectRatio: false,
-            showCropGrid: true),
-        IOSUiSettings(minimumAspectRatio: 1.0, title: '', doneButtonTitle: this._translations.save, cancelButtonTitle: this._translations.cancel)
+          toolbarTitle: '',
+          toolbarColor: options.customizationOptions.appBarColor,
+          statusBarColor: options.customizationOptions.appBarColor,
+          backgroundColor: options.customizationOptions.appBarColor,
+          toolbarWidgetColor: options.customizationOptions.iconsColor,
+          activeControlsWidgetColor: options.customizationOptions.iconsColor,
+          initAspectRatio: CropAspectRatioPreset.original,
+          cropStyle: CropStyle.rectangle,
+          lockAspectRatio: false,
+          showCropGrid: true,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9,
+          ],
+        ),
+        IOSUiSettings(
+          minimumAspectRatio: 1.0,
+          title: '',
+          doneButtonTitle: this._translations.save,
+          cancelButtonTitle: this._translations.cancel,
+          cropStyle: CropStyle.rectangle,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio3x2,
+            CropAspectRatioPreset.ratio4x3,
+            CropAspectRatioPreset.ratio16x9,
+          ],
+        )
       ],
     );
 
